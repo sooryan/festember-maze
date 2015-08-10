@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>Maze</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="maze3.js"></script>
+<style type="text/css">
+#maze {
+    border-collapse: collapse;
+    margin-top:20px;
+}
+#maze td {
+
+    width: 20px;
+    height: 20px;
+}
+</style>
+</head>
+<body>
+<input type="number" id='row' value='15'placeholder='rows'>
+<input type="number" id='col' value='7'placeholder='columns'>
+<button onclick='javascript:call();'>(a)Maze</button>
+<table id="maze">
+<tbody></tbody>
+</table>
+
+<script>
+	
+    function call(){
+    	$('#maze').html('<tbody></tbody>');	
+    	var a=$('#row').val(),b=$('#col').val();
+    	if(a<1 ||b<1)
+    	{
+    		alert("Invalid Values");
+    		return;
+    	}
+    	var maze = newMaze(a,b);
+		//maze[y][x][borders]
+    var l=maze.length-1;
+    maze[0][0][0] = 1;
+    console.log(maze);
+    maze[b-1][a-1][2] = 1;
+    for (var i = 0; i < b; i++) {
+        $('#maze > tbody').append("<tr>");
+        for (var j = 0; j < a; j++) {
+            var grid = i+"-"+j;
+            $('#maze > tbody').append("<td id='"+grid+"'>&nbsp;</td>");
+            if (maze[i][j][0] == 0) { $('#'+grid).css('border-top', '2px solid black'); }
+            if (maze[i][j][1] == 0) { $('#'+grid).css('border-right', '2px solid black'); }
+            if (maze[i][j][2] == 0) { $('#'+grid).css('border-bottom', '2px solid black'); }
+            if (maze[i][j][3] == 0) { $('#'+grid).css('border-left', '2px solid black'); }
+            console.log(i,j);
+        }
+        console.log('next row');
+        $('#maze > tbody').append("</tr>");
+    }
+}
+call();
+</script>
+
+</body>
+</html>
