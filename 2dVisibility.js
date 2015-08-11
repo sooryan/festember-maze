@@ -1,53 +1,53 @@
 var canvas;
 var context;
-
-var initialize = function () {
-    var game = new Game(canvasMaze, ctxMaze);
+var W = 800;
+var H = 600;
+/*
+window.onload = function () {
+    canvas = document.getElementById("displayCanvas");
+    canvas.width = W;
+    canvas.height = H;
+    context = canvas.getContext("2d");
+    var torch = new Torch(canvas, context);
     // Add the canvas boundaries as walls
-    addWalls(game);
-    (function start() {
-        game.start();
+    torch.walls.push(new Wall(new Point(0, 0), new Point(0, H)));
+    torch.walls.push(new Wall(new Point(0, H), new Point(canvas.width, canvas.height)));
+    torch.walls.push(new Wall(new Point(canvas.width, canvas.height), new Point(canvas.width, 0)));
+    torch.walls.push(new Wall(new Point(canvas.width, 0), new Point(0, 0)))
+    // Add additional walls
+    torch.walls.push(new Wall(new Point(122, 40), new Point(0, 150)));
+    //torch.walls.push(new Wall(new Point(100, 100), new Point(200, 100)));
+    torch.walls.push(new Wall(new Point(500, 300), new Point(600, 423)));
+    torch.walls.push(new Wall(new Point(400, 250), new Point(400, 500)));
+    (function() {
+        torch.start();
         window.requestAnimationFrame(start);
     })();
 }
-function addWalls(game){
-
-	game.walls.push(new Wall(new Point(0, 0), new Point(0, height)));
-    game.walls.push(new Wall(new Point(0, height), new Point(width, height)));
-    game.walls.push(new Wall(new Point(width, height), new Point(width, 0)));
-    game.walls.push(new Wall(new Point(width, 0), new Point(0, 0)))
-    
-    // Add additional walls
-    game.walls.push(new Wall(new Point(122, 40), new Point(0, 150)));
-    //game.walls.push(new Wall(new Point(100, 100), new Point(200, 100)));
-    game.walls.push(new Wall(new Point(500, 300), new Point(600, 423)));
-    game.walls.push(new Wall(new Point(400, 250), new Point(400, 500)));
-    
-}
-function Game(canvas, context) {
+*/
+function Torch(canvas, context) {
     this.canvas = canvas;
     this.context = context;
-    this.inputManager = new InputManager(this);
-    this.inputManager.init();
     this.clearColor = "#FFFFFF";
     this.walls = [];
     this.hitpoints = [];
 }
 
-Game.prototype = {
+Torch.prototype = {
+    addWalls: function(x1,y1,x2,y2){
+        this.walls.push(new Wall(new Point(x1, y1), new Point(x2, y2)));
+    },
     start: function () {
         this.update();
         this.render();
     },
     clear: function () {
-        //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        //this.context.fillStyle = this.clearColor;
-        //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        user.draw();
     },
     update: function () {
-        var mouseX = this.inputManager.mouseX;
-        var mouseY = this.inputManager.mouseY;
-        console.log(mouseX,mouseY);
+        var mouseX = mouse.mouseX;
+        var mouseY = mouse.mouseY;
         this.hitpoints = [];
         // For every wall...
         for (var i = 0; i < this.walls.length; i++) {
@@ -93,13 +93,13 @@ Game.prototype = {
         this.context.stroke();
         // Render cursor's position
         this.context.fillStyle = "#FF0000";
-        var mouseX = this.inputManager.mouseX;
-        var mouseY = this.inputManager.mouseY;
+        var mouseX = mouse.mouseX;
+        var mouseY = mouse.mouseY;
         this.context.fillRect(mouseX - 5, mouseY - 5, 10, 10);
         // Render all the hitpoints
         this.context.fillStyle = "#0000FF";
-        var mouseX = this.inputManager.mouseX;
-        var mouseY = this.inputManager.mouseY;
+        var mouseX = mouse.mouseX;
+        var mouseY = mouse.mouseY;
         this.context.strokeStyle = "#FF0000",
         this.context.beginPath();
         for (var i = 0; i < this.hitpoints.length; i++) {
@@ -184,32 +184,4 @@ function Point(x, y) {
     this.x = x;
     this.y = y;
     this.parent = null;
-}
-
-function InputManager(game) {
-    this.game = game;
-    this.hoverOver = false;
-    this.mouseX = 0;
-    this.mouseY = 0;
-}
-
-InputManager.prototype = {
-    init: function () {
-    	console.log('initialised');
-        this.game.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-        console.log(this.game.canvas);
-        this.game.canvas.addEventListener("mouseover", this.onMouseOver.bind(this), false);
-        this.game.canvas.addEventListener("mouseout", this.onMouseOut.bind(this), false);
-    },
-    onMouseMove: function (e) {
-        var rect = this.game.canvas.getBoundingClientRect();
-        this.mouseX = e.clientX - rect.left;
-        this.mouseY = e.clientY - rect.top;
-    },
-    onMouseOver: function (e) {
-        this.hoverOver = true;
-    },
-    onMouseOut: function (e) {
-        this.hoverOver = false;
-    }
 }

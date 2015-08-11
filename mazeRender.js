@@ -1,6 +1,7 @@
 /*--------------------------MAZE--------------------------*/
 canvasMaze = document.getElementById('canvasMaze');
 ctxMaze = canvasMaze.getContext('2d');
+
 //Properties
 var gSize = 40;
 var a = 15,
@@ -13,6 +14,7 @@ canvas2 = document.getElementById('canvasMotion');
 ctx2 = canvas2.getContext('2d');
 canvas2.width = width;
 canvas2.height = height;
+var torch = new Torch(canvas2, ctx2);
 /*--------------------------DARKNESS-------------------------*/
 canvas3 = document.getElementById('darkness');
 ctx3 = canvas3.getContext('2d');
@@ -103,13 +105,83 @@ function drawMaze() {
 }
 
 function drawRect(i, j) {
+
     if (blocks.indexOf(i + '-' + j) == -1) {
+        console.log("drawing Rect",i,j);
         blocks.push(i + '-' + j);
         ctxMaze.fillStyle = color;
         ctxMaze.fillRect(i * gSize, j * gSize, gSize, gSize);
         ctxMaze.strokeStyle = '#000000';
         ctxMaze.strokeRect(i * gSize, j * gSize, gSize, gSize);
     }
+}
+
+function drawVLines(line){
+        var i= line[0]*gSize,
+            j1= line[1]*gSize
+            j2= line[2]*gSize;
+        torch.addWalls(i,j1,i,j2);
+        ctxMaze.strokeStyle = '#000000';
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i, j1);
+        ctxMaze.lineTo(i+gSize, j1);
+        ctxMaze.stroke();
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i, j2);
+        ctxMaze.lineTo(i+gSize, j2);
+        ctxMaze.stroke();
+        torch.addWalls(i,j1,i+gSize,j1);
+        torch.addWalls(i,j2,i+gSize,j2);
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i, j1);
+        ctxMaze.lineTo(i, j2);
+        ctxMaze.stroke();
+        var i= (line[0]+1)*gSize,
+            j1= line[1]*gSize
+            j2= line[2]*gSize;
+        torch.addWalls(i,j1,i,j2);
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i, j1);
+        ctxMaze.lineTo(i, j2);
+        ctxMaze.stroke();
+}
+function drawHLines(line){
+        var j= line[0]*gSize,
+            i1= line[1]*gSize
+            i2= line[2]*gSize;
+        ctxMaze.strokeStyle = '#000000';
+        torch.addWalls(i1,j,i2,j);
+        
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i1, j);
+        ctxMaze.lineTo(i1,j+gSize);
+        ctxMaze.stroke();
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i2, j);
+        ctxMaze.lineTo(i2, j+gSize);
+        ctxMaze.stroke();
+        torch.addWalls(i1,j,i1,j+gSize);
+        torch.addWalls(i2,j,i2,j+gSize);
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i1, j);
+        ctxMaze.lineTo(i2, j);
+        ctxMaze.stroke();
+        var j= (line[0]+1)*gSize,
+            i1= line[1]*gSize
+            i2= line[2]*gSize;
+        torch.addWalls(i1,j,i2,j);
+        ctxMaze.beginPath();
+        ctxMaze.lineWidth = 1;
+        ctxMaze.moveTo(i1, j);
+        ctxMaze.lineTo(i2, j);
+        ctxMaze.stroke();
 }
 
 function lightUp(i, j, clear) {
@@ -163,7 +235,6 @@ User.prototype = {
         if (keys.indexOf(evt.keyCode) != -1) {
             ctx2.clearRect(0, 0, width, height);
             this.draw();
-            console.log(this.x, this.y)
             if (this.collide(evt.keyCode)) console.log('Collision');
         }
     },
@@ -202,9 +273,6 @@ var alpha = 0;
 var fadeIn = 1;
 
 function update() {
-    console.log(alpha)
-
-
     if (fadeIn) {
         alpha += .001;
         if (alpha >= 1) {

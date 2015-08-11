@@ -70,10 +70,8 @@ function newMaze(x, y) {
         }
         // Otherwise go back up a step and keep going
         else {
-            console.log('nope');
             currentCell = path.pop();
         }
-        console.log(currentCell);
     }
     return cells;
 }
