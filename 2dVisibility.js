@@ -1,29 +1,5 @@
-var canvas;
-var context;
-var W = 800;
-var H = 600;
 /*
-window.onload = function () {
-    canvas = document.getElementById("displayCanvas");
-    canvas.width = W;
-    canvas.height = H;
-    context = canvas.getContext("2d");
-    var torch = new Torch(canvas, context);
-    // Add the canvas boundaries as walls
-    torch.walls.push(new Wall(new Point(0, 0), new Point(0, H)));
-    torch.walls.push(new Wall(new Point(0, H), new Point(canvas.width, canvas.height)));
-    torch.walls.push(new Wall(new Point(canvas.width, canvas.height), new Point(canvas.width, 0)));
-    torch.walls.push(new Wall(new Point(canvas.width, 0), new Point(0, 0)))
-    // Add additional walls
-    torch.walls.push(new Wall(new Point(122, 40), new Point(0, 150)));
-    //torch.walls.push(new Wall(new Point(100, 100), new Point(200, 100)));
-    torch.walls.push(new Wall(new Point(500, 300), new Point(600, 423)));
-    torch.walls.push(new Wall(new Point(400, 250), new Point(400, 500)));
-    (function() {
-        torch.start();
-        window.requestAnimationFrame(start);
-    })();
-}
+Inspired by http://ncase.me/sight-and-light/
 */
 function Torch(canvas, context) {
     this.canvas = canvas;
@@ -39,7 +15,7 @@ Torch.prototype = {
     },
     start: function () {
         this.update();
-        this.render();
+        this.draw();
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -80,7 +56,7 @@ Torch.prototype = {
             }
         }
     },
-    render: function () {
+    draw: function () {
         this.clear();
         this.context.save();
         // Render all the walls
@@ -92,21 +68,15 @@ Torch.prototype = {
         }
         this.context.stroke();
         // Render cursor's position
-        this.context.fillStyle = "#FF0000";
         var mouseX = mouse.mouseX;
         var mouseY = mouse.mouseY;
-        this.context.fillRect(mouseX - 5, mouseY - 5, 10, 10);
         // Render all the hitpoints
-        this.context.fillStyle = "#0000FF";
-        var mouseX = mouse.mouseX;
-        var mouseY = mouse.mouseY;
         this.context.strokeStyle = "#FF0000",
         this.context.beginPath();
         for (var i = 0; i < this.hitpoints.length; i++) {
             var hitpoint = this.hitpoints[i];
             this.context.moveTo(mouseX, mouseY);
             this.context.lineTo(hitpoint.x, hitpoint.y);
-            this.context.fillRect(hitpoint.x - 5, hitpoint.y - 5, 10, 10);
         }
         this.context.stroke();
         this.context.restore();
@@ -116,8 +86,6 @@ Torch.prototype = {
 function Wall(p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
-    this.p1.parent = this;
-    this.p2.parent = this;
     this.points = [p1, p2];
 
     this.length = function () {
@@ -131,18 +99,18 @@ function Wall(p1, p2) {
     /*
     Lines can be described by some initial vector, v, and a direction vector, d:
 
-	r = v + lambda*d 
-	We use one point (a,b) as the initial vector and the difference between them (c-a,d-b) as the direction vector. Likewise for our second line.
+    r = v + lambda*d 
+    We use one point (a,b) as the initial vector and the difference between them (c-a,d-b) as the direction vector. Likewise for our second line.
 
-	If our two lines intersect, then there must be a point, X, that is reachable by travelling some distance, lambda, along our first line and also reachable by travelling gamma units along our second line. This gives us two simultaneous equations for the coordinates of X:
+    If our two lines intersect, then there must be a point, X, that is reachable by travelling some distance, lambda, along our first line and also reachable by travelling gamma units along our second line. This gives us two simultaneous equations for the coordinates of X:
 
-	X = v1 + lambda*d1 
-	X = v2 + gamma *d2
-	These equations can be represented in matrix form. We check that the determinant is non-zero to see if the intersection X even exists.
+    X = v1 + lambda*d1 
+    X = v2 + gamma *d2
+    These equations can be represented in matrix form. We check that the determinant is non-zero to see if the intersection X even exists.
 
-	If there is an intersection, then we must check that the intersection actually lies between both sets of points. If lambda is greater than 1, the intersection is beyond the second point. If lambda is less than 0, the intersection is before the first point.
+    If there is an intersection, then we must check that the intersection actually lies between both sets of points. If lambda is greater than 1, the intersection is beyond the second point. If lambda is less than 0, the intersection is before the first point.
 
-	Hence, 0<lambda<1 && 0<gamma<1 indicates that the two lines intersect!
+    Hence, 0<lambda<1 && 0<gamma<1 indicates that the two lines intersect!
     */
     this.intersectsWith = function (wall) {
         var a = this.p1;
@@ -183,5 +151,4 @@ function Wall(p1, p2) {
 function Point(x, y) {
     this.x = x;
     this.y = y;
-    this.parent = null;
 }
