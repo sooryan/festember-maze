@@ -1,3 +1,14 @@
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       || 
+          window.webkitRequestAnimationFrame || 
+          window.mozRequestAnimationFrame    || 
+          window.oRequestAnimationFrame      || 
+          window.msRequestAnimationFrame     || 
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 var Lamp = illuminated.Lamp,
     RectangleObject = illuminated.RectangleObject,
     DiscObject = illuminated.DiscObject,
@@ -34,15 +45,10 @@ function createArray(length) {
 }
 //positions of blocks
 var blocks = [],
-    usableBlocks = createArray(15, 32),
-    particles = [];
-
-function coinFlip() {
-    return Math.random() > .5 ? 1 : -1;
-}
+    usableBlocks = createArray(2*b+1, 2*a+1);
 
 function drawMaze() {
-    ctxMaze.clearRect(0, 0, width, height);
+    //ctxMaze.clearRect(0, 0, width, height);
     var blocks = new Array();
     var i;
     for (i = 0; i < 2 * a + 1; i += 2) {
@@ -75,7 +81,6 @@ function drawMaze() {
 function drawRect(i, j) {
 
     if (blocks.indexOf(i + '-' + j) == -1) {
-        console.log("drawing Rect", i, j);
         blocks.push(i + '-' + j);
     }
 }
@@ -110,13 +115,10 @@ function User() {
 }
 User.prototype = {
     draw: function () {
-
         ctx2.fillStyle = this.color;
         ctx2.beginPath();
         ctx2.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx2.fill();
-        //ctx2.stroke();
-
     },
     move: function (evt) {
         var keys = [37, 38, 39, 40]
@@ -136,22 +138,32 @@ User.prototype = {
         }
         if (keys.indexOf(evt.keyCode) != -1) {
             ctx2.clearRect(0, 0, width, height);
-            //this.draw();
             if (this.collide(evt.keyCode)) console.log('Collision');
         }
+        start();
     },
     collide: function (key) {
         var collision = 0;
         this.xG = Math.floor((this.x + this.radius) / gSize);
+
         this.yG = Math.floor((this.y + this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
+            collision = 1;
+        
         this.yG = Math.floor((this.y - this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
+            collision = 1;
+        
         this.xG = Math.floor((this.x - this.radius) / gSize);
+        
         this.yG = Math.floor((this.y - this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
+            collision = 1;
+
         this.yG = Math.floor((this.y + this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
+            collision = 1;
+        
         if (collision) {
             switch (key) {
                 case 37:
@@ -171,34 +183,96 @@ User.prototype = {
         return collision;
     }
 };
-var alpha = 0;
-var fadeIn = 1;
+
 var count = 100;
 
 function start() {
-    var dist;
-    if (count > 20) dist = (count--) * 10;
-    else dist = 200;
-    var canvas = document.getElementById("canvasMaze");
-    var ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(mouse.mouseX, mouse.mouseY);
+    var obj=[];
+    console.log(user.xG,user.yG);
+    
+    var dist=200;
+    /*if (count > 20) dist = (count--) * 10;
+    else dist = 200;*/
+    rectangles.forEach(function(r){
+        if(Math.abs(r.points[0].x-user.x)<dist||Math.abs(r.points[0].y-user.y)<dist)
+            obj.push(r);
+    })
+    var canvas = canvasMaze;
+    var ctx = ctxMaze;
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     var light = new Lamp({
         position: new Vec2(user.x, user.y),
-        radius: 1,
+        radius: 0,
         samples: 4,
         distance: dist
     });
 
     var lighting = new Lighting({
         light: light,
-        objects: rectangles
+        objects: obj
     });
-    lighting.compute(canvas.width, canvas.height);
+    lighting.compute(canvas.width,canvas.height);
     ctx.fillStyle = "black";
-    //setTimeout(function () {}, 100);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     lighting.render(ctx);
     user.draw();
-    requestAnimationFrame(start);
+    //requestAnimFrame(start)
+    //setInterval(start,60);
 }
+(function () {
+    drawMaze();
+    var i, j;
+    var mouse = {};
+    user = new User();
+    window.addEventListener('keydown', function (e) {
+        user.move(e);
+    }, false);
+
+    for (i = 0; i < 2*b+1; i++)
+    for (j = 0; j < 2*a+1; j++) {
+        usableBlocks[i][j] = 0;
+    };
+    blocks.forEach(function (block) {
+        var index;
+        usableBlocks[block.split('-')[1]][block.split('-')[0]] = 1;
+    })
+    //initialize();
+    var horlines = [],
+        verlines = [];
+    var s1 = 0,
+        e1 = 0;
+
+    for (i = 0; i < 2*b+1; i++) {
+        for (j = 0; j < 2*a+1; j++)
+        if (usableBlocks[i][j] == 1) {
+            s1 = j;
+            e1 = j;
+            while (j < (2*a+1) && usableBlocks[i][j] == 1) {
+                e1++;
+                j++;
+            }
+            if (e1 - s1 >= 2) horlines.push([i, s1, e1]);
+
+        }
+    }
+    for (j = 0; j < 2*a+1; j++) {
+        for (i = 0; i < 2*b+1; i++) {
+            if (usableBlocks[i][j] == 1) {
+                s1 = i;
+                e1 = i;
+                while (i < 2*b+1 && usableBlocks[i][j] === 1) {
+                    e1++;
+                    i++;
+                }
+                if (e1 - s1 >= 2) verlines.push([j, s1, e1]);
+            }
+        }
+    }
+    horlines.forEach(function (line) {
+        drawHLines(line);
+    });
+    verlines.forEach(function (line) {
+        drawVLines(line);
+    });
+start();
+})();

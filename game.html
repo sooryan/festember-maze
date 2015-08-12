@@ -8,15 +8,10 @@
         <script src="maze3.js"></script>
         <style>
             canvas {
-            	//background-color:brown;
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-            }
-            #canvasMazze {
-                background-color: #eee;
-                border: 1px solid black;
             }
         </style>
     </head>
@@ -26,65 +21,6 @@
         <canvas id="canvasMotion" style='z-index = 2'></canvas>
         <script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>
-        <script>
-            drawMaze();
-            var i, j;
-            var mouse = {};
-
-            for (i = 0; i < 15; i++)
-             for (j = 0; j < 31; j++) {
-                usableBlocks[i][j] = 0;
-            };
-            blocks.forEach(function(block) {
-                var index;
-                usableBlocks[block.split('-')[1]][block.split('-')[0]] = 1;
-            })
-            //initialize();
-            user = new User();
-            user.draw();
-
-            window.addEventListener('keydown', function(e) {
-                user.move(e);
-            }, false);
-            var horlines = [],
-                verlines = [];
-            var s1 = 0,
-                e1 = 0;
-
-            for (i = 0; i < 15; i++) {
-                for (j = 0; j < 31; j++)
-                if (usableBlocks[i][j] == 1) {
-                    s1 = j;
-                    e1 = j;
-                    while (usableBlocks[i][j] == 1 && j < 31) {
-                        e1++;
-                        j++;
-                    }
-                    if (e1 - s1 >= 2) horlines.push([i, s1, e1]);
-
-                }
-            }
-            for (j = 0; j < 31; j++) {
-                for (i = 0; i < 15; i++) {
-                    if (usableBlocks[i][j] == 1) {
-                        s1 = i;
-                        e1 = i;
-                        while (i < 15 && usableBlocks[i][j] === 1) {
-                            e1++;
-                            i++;
-                        }
-                        if (e1 - s1 >= 2) verlines.push([j, s1, e1]);
-                    }
-                }
-            }
-            horlines.forEach(function(line) {
-                drawHLines(line);
-            });
-            verlines.forEach(function(line) {
-                drawVLines(line);
-            });
-            start();
-        </script>
     </body>
 
 </html>
