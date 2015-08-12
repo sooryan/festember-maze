@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>demo</title>
+</head>
+<body>
+	<canvas id="demo1" height=500 width=500></canvas>
+	<script src="illuminated.js"></script>
+	<script>
+	var canvas = document.getElementById("demo1");
+	var mouse={};
+	window.addEventListener("mousemove", function(e){
+            	//var canvas=document.getElementById("canvasMaze");
+		        var rect = canvas.getBoundingClientRect();
+		        mouse.mouseX = e.clientX - rect.left;
+		        mouse.mouseY = e.clientY - rect.top;
+		        //console.log(mouse.mouseX,mouse.mouseY);
+
+            }, false);
+	(function start(){
+  // Importing relevant classes
+  var Lamp = illuminated.Lamp
+  , RectangleObject = illuminated.RectangleObject
+  , DiscObject = illuminated.DiscObject
+  , Vec2 = illuminated.Vec2
+  , Lighting = illuminated.Lighting
+  ;
+	
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  console.log(mouse.mouseX,mouse.mouseY);
+  var light = new Lamp({
+    position: new Vec2(mouse.mouseX,mouse.mouseY),
+    radius:10,
+    samples:50,
+    distance: 300
+
+  });
+  var disc = new DiscObject({ 
+    center: new Vec2(100, 100), 
+    radius: 30 
+  });
+  var rect = new RectangleObject({ 
+    topleft: new Vec2(250, 200), 
+    bottomright: new Vec2(350, 250) 
+  });
+
+  var lighting = new Lighting({
+    light: light,
+    objects: [ disc, rect ]
+  });
+  lighting.compute(canvas.width, canvas.height);
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  lighting.render(ctx);
+  requestAnimationFrame(start);
+})();</script>
+</body>
+</html>
