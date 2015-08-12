@@ -185,8 +185,8 @@ function start() {
     console.log(mouse.mouseX, mouse.mouseY);
     var light = new Lamp({
         position: new Vec2(user.x, user.y),
-        radius: 10,
-        samples: 5,
+        radius: 1,
+        samples: 4,
         distance: dist
     });
 
@@ -196,7 +196,7 @@ function start() {
     });
     lighting.compute(canvas.width, canvas.height);
     ctx.fillStyle = "black";
-    setTimeout(function () {}, 100);
+    //setTimeout(function () {}, 100);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     lighting.render(ctx);
     user.draw();
