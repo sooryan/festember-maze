@@ -23,8 +23,7 @@
     <body>
         <canvas id="canvasMaze" style='z-index = 100'></canvas>
         <canvas id="canvasMotion" style='z-index = 2'></canvas>
-        <canvas id="darkness" style='z-index = 3'></canvas>
-        <script src='2dVisibility.js'></script>
+		<script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>
         
         <script>
@@ -48,14 +47,14 @@
                 user.move(e);
             }, false);
             //update();
-            window.addEventListener("mousemove", function(e){
+            /*window.addEventListener("mousemove", function(e){
             	//var canvas=document.getElementById("canvasMaze");
 		        var rect = canvasMaze.getBoundingClientRect();
 		        mouse.mouseX = e.clientX - rect.left;
 		        mouse.mouseY = e.clientY - rect.top;
 		        //console.log(mouse.mouseX,mouse.mouseY);
 
-            }, false);
+            }, false);*/
             var horlines = [],
                 verlines = [];
             var s1 = 0,
@@ -99,11 +98,8 @@
             verlines.forEach(function(line){
             	drawVLines(line);
             });
-            console.log(torch.walls);
-			 (function start() {
-			        torch.start();
-			        window.requestAnimationFrame(start);
-			    })();           
+            //console.log(torch.walls);
+			        start();
         </script>
     </body>
 

@@ -46,8 +46,8 @@ Torch.prototype = {
         user.draw();
     },
     update: function () {
-        var mouseX = mouse.mouseX;
-        var mouseY = mouse.mouseY;
+        var mouseX = user.x;
+        var mouseY = user.y;
         this.hitpoints = [];
         // For every wall...
         for (var i = 0; i < this.walls.length; i++) {
@@ -93,13 +93,13 @@ Torch.prototype = {
         this.context.stroke();
         // Render cursor's position
         this.context.fillStyle = "#FF0000";
-        var mouseX = mouse.mouseX;
-        var mouseY = mouse.mouseY;
+        var mouseX = user.x;
+        var mouseY = user.y;
         this.context.fillRect(mouseX - 5, mouseY - 5, 10, 10);
         // Render all the hitpoints
         this.context.fillStyle = "#0000FF";
-        var mouseX = mouse.mouseX;
-        var mouseY = mouse.mouseY;
+        var mouseX = user.x;
+        var mouseY = user.y;
         this.context.strokeStyle = "#FF0000",
         this.context.beginPath();
         for (var i = 0; i < this.hitpoints.length; i++) {
