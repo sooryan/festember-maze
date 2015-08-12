@@ -23,14 +23,13 @@
     <body>
         <canvas id="canvasMaze" style='z-index = 100'></canvas>
         <canvas id="canvasMotion" style='z-index = 2'></canvas>
-		<script src='illuminated/illuminated.js'></script>
+        <script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>
-        
         <script>
-        	drawMaze();
-        	var i, j;
-        	var mouse={};
-            
+            drawMaze();
+            var i, j;
+            var mouse = {};
+
             for (i = 0; i < 15; i++)
              for (j = 0; j < 31; j++) {
                 usableBlocks[i][j] = 0;
@@ -46,25 +45,10 @@
             window.addEventListener('keydown', function(e) {
                 user.move(e);
             }, false);
-            //update();
-            /*window.addEventListener("mousemove", function(e){
-            	//var canvas=document.getElementById("canvasMaze");
-		        var rect = canvasMaze.getBoundingClientRect();
-		        mouse.mouseX = e.clientX - rect.left;
-		        mouse.mouseY = e.clientY - rect.top;
-		        //console.log(mouse.mouseX,mouse.mouseY);
-
-            }, false);*/
             var horlines = [],
                 verlines = [];
             var s1 = 0,
                 e1 = 0;
-
-            /*for (i = 0; i < 15; i++) {
-                for (j = 0; j < 31; j++)
-                document.write(usableBlocks[i][j] + ' ');
-                document.write('<br>');
-            };*/
 
             for (i = 0; i < 15; i++) {
                 for (j = 0; j < 31; j++)
@@ -92,14 +76,13 @@
                     }
                 }
             }
-            horlines.forEach(function(line){
-            	drawHLines(line);
+            horlines.forEach(function(line) {
+                drawHLines(line);
             });
-            verlines.forEach(function(line){
-            	drawVLines(line);
+            verlines.forEach(function(line) {
+                drawVLines(line);
             });
-            //console.log(torch.walls);
-			        start();
+            start();
         </script>
     </body>
 

@@ -1,10 +1,9 @@
-var Lamp = illuminated.Lamp
-  , RectangleObject = illuminated.RectangleObject
-  , DiscObject = illuminated.DiscObject
-  , Vec2 = illuminated.Vec2
-  , Lighting = illuminated.Lighting
-  ;
-var rectangles=[];
+var Lamp = illuminated.Lamp,
+    RectangleObject = illuminated.RectangleObject,
+    DiscObject = illuminated.DiscObject,
+    Vec2 = illuminated.Vec2,
+    Lighting = illuminated.Lighting;
+var rectangles = [];
 /*--------------------------MAZE--------------------------*/
 canvasMaze = document.getElementById('canvasMaze');
 ctxMaze = canvasMaze.getContext('2d');
@@ -22,34 +21,20 @@ ctx2 = canvas2.getContext('2d');
 canvas2.width = width;
 canvas2.height = height;
 /*--------------------------DARKNESS-------------------------*/
-var x,y;
-/*$('#darkness').mousemove(function () {
-    var rect = this.getBoundingClientRect();
-        x = event.clientX - rect.left;
-        y = event.clientY - rect.top;
-    lightUp(x, y, 1);
-    return false;
-});
-$('#darkness').mouseup(function () {
-    console.log(x,y);
-    lightUp(x, y, 0);
-    return false;
-});*/
-
 function createArray(length) {
     var arr = new Array(length || 0),
         i = length;
 
     if (arguments.length > 1) {
         var args = Array.prototype.slice.call(arguments, 1);
-        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
     }
 
     return arr;
 }
 //positions of blocks
 var blocks = [],
-    usableBlocks=createArray(15,32),
+    usableBlocks = createArray(15, 32),
     particles = [];
 
 function coinFlip() {
@@ -59,32 +44,13 @@ function coinFlip() {
 function drawMaze() {
     ctxMaze.clearRect(0, 0, width, height);
     var blocks = new Array();
-    ctxMaze.strokestyle = "#000000";
     var i;
-    /*
-    for (i = 0; i < height; i += gSize) {
-        ctxMaze.strokeStyle = '#000000';
-        ctxMaze.beginPath();
-        ctxMaze.lineWidth = 1;
-        ctxMaze.moveTo(0, i);
-        ctxMaze.lineTo(width, i);
-        ctxMaze.stroke();
-    }
-    for (i = 0; i < width; i += gSize) {
-        ctxMaze.strokeStyle = '#000000';
-        ctxMaze.beginPath();
-        ctxMaze.lineWidth = 1;
-        ctxMaze.moveTo(i, 0);
-        ctxMaze.lineTo(i, height);
-        ctxMaze.stroke();
-    }*/
     for (i = 0; i < 2 * a + 1; i += 2) {
         for (var j = 0; j < 2 * b + 1; j += 2) {
             drawRect(i, j);
         };
     };
     var maze = newMaze(a, b);
-    var l = maze.length - 1;
     maze[0][0][0] = 1;
     maze[b - 1][a - 1][2] = 1;
     for (var i = 0; i < b; i++) {
@@ -109,32 +75,29 @@ function drawMaze() {
 function drawRect(i, j) {
 
     if (blocks.indexOf(i + '-' + j) == -1) {
-        console.log("drawing Rect",i,j);
+        console.log("drawing Rect", i, j);
         blocks.push(i + '-' + j);
-        ctxMaze.fillStyle = color;
-        ctxMaze.fillRect(i * gSize, j * gSize, gSize, gSize);
-        ctxMaze.strokeStyle = '#000000';
-        ctxMaze.strokeRect(i * gSize, j * gSize, gSize, gSize);
     }
 }
 
-function drawVLines(line){
-        var i= line[0]*gSize,
-            j1= line[1]*gSize
-            j2= line[2]*gSize;
-    rectangles.push(new RectangleObject({ 
-    topleft: new Vec2(i,j1), 
-    bottomright: new Vec2(i+gSize,j2) 
-  }));
+function drawVLines(line) {
+    var i = line[0] * gSize,
+        j1 = line[1] * gSize
+        j2 = line[2] * gSize;
+    rectangles.push(new RectangleObject({
+        topleft: new Vec2(i, j1),
+        bottomright: new Vec2(i + gSize, j2)
+    }));
 }
-function drawHLines(line){
-        var j= line[0]*gSize,
-            i1= line[1]*gSize
-            i2= line[2]*gSize;
-        rectangles.push(new RectangleObject({ 
-    topleft: new Vec2(i1,j), 
-    bottomright: new Vec2(i2,j+gSize) 
-  }));
+
+function drawHLines(line) {
+    var j = line[0] * gSize,
+        i1 = line[1] * gSize
+        i2 = line[2] * gSize;
+    rectangles.push(new RectangleObject({
+        topleft: new Vec2(i1, j),
+        bottomright: new Vec2(i2, j + gSize)
+    }));
 }
 
 function User() {
@@ -210,37 +173,32 @@ User.prototype = {
 };
 var alpha = 0;
 var fadeIn = 1;
-var count=100;
-function start(){
-  // Importing relevant classes
-  var dist;
-  if(count>20)
-  dist=(count--)*10;
-  else
-    dist=200;
-  var canvas=document.getElementById("canvasMaze");
-  var ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  console.log(mouse.mouseX,mouse.mouseY);
-  var light = new Lamp({
-    position: new Vec2(user.x,user.y),
-    radius:10,
-    samples:5,
-    distance:dist
-  });
-  /*var rect = new RectangleObject({ 
-    topleft: new Vec2(250, 200), 
-    bottomright: new Vec2(350, 250) 
-  });*/
+var count = 100;
 
-  var lighting = new Lighting({
-    light: light,
-    objects: rectangles
-  });
-  lighting.compute(canvas.width, canvas.height);
-  ctx.fillStyle = "black";
-  setTimeout(function() {}, 100); ctx.fillRect(0, 0, canvas.width, canvas.height);
-  lighting.render(ctx);
-  user.draw();
-  requestAnimationFrame(start);
+function start() {
+    var dist;
+    if (count > 20) dist = (count--) * 10;
+    else dist = 200;
+    var canvas = document.getElementById("canvasMaze");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log(mouse.mouseX, mouse.mouseY);
+    var light = new Lamp({
+        position: new Vec2(user.x, user.y),
+        radius: 10,
+        samples: 5,
+        distance: dist
+    });
+
+    var lighting = new Lighting({
+        light: light,
+        objects: rectangles
+    });
+    lighting.compute(canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+    setTimeout(function () {}, 100);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    lighting.render(ctx);
+    user.draw();
+    requestAnimationFrame(start);
 }
