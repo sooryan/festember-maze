@@ -1,13 +1,19 @@
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       || 
-          window.webkitRequestAnimationFrame || 
-          window.mozRequestAnimationFrame    || 
-          window.oRequestAnimationFrame      || 
-          window.msRequestAnimationFrame     || 
-          function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-          };
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        window.setTimeout(callback, 1000 / 60);
+    };
 })();
+
+Array.prototype.sortOn = function(key){
+    this.sort(function(a, b){
+        if(a[key] < b[key]){
+            return -1;
+        }else if(a[key] > b[key]){
+            return 1;
+        }
+        return 0;
+    });
+}
 
 var Lamp = illuminated.Lamp,
     RectangleObject = illuminated.RectangleObject,
@@ -21,8 +27,8 @@ ctxMaze = canvasMaze.getContext('2d');
 
 //Properties
 var gSize = 40;
-var a = 10,
-    b = 7;
+var a = 5,
+    b = 5;
 var color = 'darkred';
 width = canvasMaze.width = (a * 2 + 1) * gSize;
 height = canvasMaze.height = (b * 2 + 1) * gSize;
@@ -45,7 +51,7 @@ function createArray(length) {
 }
 //positions of blocks
 var blocks = [],
-    usableBlocks = createArray(2*b+1, 2*a+1);
+    usableBlocks = createArray(2 * b + 1, 2 * a + 1);
 
 function drawMaze() {
     //ctxMaze.clearRect(0, 0, width, height);
@@ -86,9 +92,9 @@ function drawRect(i, j) {
 }
 
 function drawVLines(line) {
-    var i = line[0] * gSize,
-        j1 = line[1] * gSize
-        j2 = line[2] * gSize;
+    var i = line.x * gSize,
+        j1 = line.y1 * gSize
+        j2 = line.y2 * gSize;
     rectangles.push(new RectangleObject({
         topleft: new Vec2(i, j1),
         bottomright: new Vec2(i + gSize, j2)
@@ -96,9 +102,9 @@ function drawVLines(line) {
 }
 
 function drawHLines(line) {
-    var j = line[0] * gSize,
-        i1 = line[1] * gSize
-        i2 = line[2] * gSize;
+    var j = line.y * gSize,
+        i1 = line.x1 * gSize
+        i2 = line.x2 * gSize;
     rectangles.push(new RectangleObject({
         topleft: new Vec2(i1, j),
         bottomright: new Vec2(i2, j + gSize)
@@ -106,13 +112,13 @@ function drawHLines(line) {
 }
 
 function User() {
-    this.x = gSize*1.5;
-    this.y = gSize/2;
+    this.x = gSize * 1.5;
+    this.y = gSize / 2;
     this.xG = 1;
     this.yG = 0;
     this.color = 'white';
     this.radius = gSize / 4;
-    this.speed = gSize/2;
+    this.speed = gSize / 2;
 }
 User.prototype = {
     draw: function () {
@@ -138,32 +144,30 @@ User.prototype = {
                 break;
         }
         if (keys.indexOf(evt.keyCode) != -1) {
-            ctx2.clearRect(0, 0, width, height);
+
+            ctx2.clearRect(this.x - gSize, this.y - gSize, 2 * gSize, 2 * gSize);
             if (this.collide(evt.keyCode)) console.log('Collision');
         }
     },
-    collide: function (key) {
+    collide: function (key, collision) {
         var collision = 0;
         this.xG = Math.floor((this.x + this.radius) / gSize);
 
         this.yG = Math.floor((this.y + this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
-            collision = 1;
-        
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+
         this.yG = Math.floor((this.y - this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
-            collision = 1;
-        
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+
         this.xG = Math.floor((this.x - this.radius) / gSize);
-        
+
         this.yG = Math.floor((this.y - this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
-            collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
 
         this.yG = Math.floor((this.y + this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) 
-            collision = 1;
-        
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+
+
         if (collision) {
             switch (key) {
                 case 37:
@@ -187,16 +191,22 @@ User.prototype = {
 var count = 100;
 
 function start(obj) {
-    
-    console.log(user.xG,user.yG);
-    
-    var dist=200;
+
+    console.log(user.xG, user.yG);
+
+    var dist = 200;
     /*if (count > 20) dist = (count--) * 10;
     else dist = 200;*/
-    
+
     var canvas = canvasMaze;
     var ctx = ctxMaze;
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var light2 = new Lamp({
+        position: new Vec2(user.x, user.y),
+        radius: 0,
+        // samples: 4,
+        distance: dist
+    });
     var light = new Lamp({
         position: new Vec2(user.x, user.y),
         radius: 0,
@@ -208,7 +218,7 @@ function start(obj) {
         light: light,
         objects: obj
     });
-    lighting.compute(canvas.width,canvas.height);
+    lighting.compute(canvas.width, canvas.height);
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     lighting.render(ctx);
@@ -217,18 +227,18 @@ function start(obj) {
     //setInterval(start,60);
 }
 (function () {
-    var updateCanvas=true;
+    var updateCanvas = true;
     drawMaze();
     var i, j;
     var mouse = {};
     user = new User();
     window.addEventListener('keydown', function (e) {
-        updateCanvas=true;
+        updateCanvas = true;
         user.move(e);
     }, false);
 
-    for (i = 0; i < 2*b+1; i++)
-    for (j = 0; j < 2*a+1; j++) {
+    for (i = 0; i < 2 * b + 1; i++)
+    for (j = 0; j < 2 * a + 1; j++) {
         usableBlocks[i][j] = 0;
     };
     blocks.forEach(function (block) {
@@ -237,33 +247,58 @@ function start(obj) {
     })
     //initialize();
     var horlines = [],
-        verlines = [];
+        verlines = [],
+        horfree = [],
+        verfree = [];
     var s1 = 0,
         e1 = 0;
 
-    for (i = 0; i < 2*b+1; i++) {
-        for (j = 0; j < 2*a+1; j++)
+    for (i = 0; i < 2 * b + 1; i++) {
+        for (j = 0; j < 2 * a + 1; j++)
         if (usableBlocks[i][j] == 1) {
             s1 = j;
             e1 = j;
-            while (j < (2*a+1) && usableBlocks[i][j] == 1) {
+            while (j < (2 * a + 1) && usableBlocks[i][j] == 1) {
                 e1++;
                 j++;
             }
-            if (e1 - s1 >= 2) horlines.push([i, s1, e1]);
+            len = e1 - s1;
+            if (len >= 2) horlines.push({y:i,x1: s1,x2: e1,len: len});
+
+        }
+        else if (usableBlocks[i][j] == 0) {
+            s1 = j;
+            e1 = j;
+            while (j < (2 * a + 1) && usableBlocks[i][j] == 0) {
+                e1++;
+                j++;
+            }
+            len = e1 - s1;
+            if (len >= 2) horfree.push({y:i,x1: s1,x2: e1,len: len,free: 1});
 
         }
     }
-    for (j = 0; j < 2*a+1; j++) {
-        for (i = 0; i < 2*b+1; i++) {
+    for (j = 0; j < 2 * a + 1; j++) {
+        for (i = 0; i < 2 * b + 1; i++) {
             if (usableBlocks[i][j] == 1) {
                 s1 = i;
                 e1 = i;
-                while (i < 2*b+1 && usableBlocks[i][j] === 1) {
+                while (i < 2 * b + 1 && usableBlocks[i][j] === 1) {
                     e1++;
                     i++;
                 }
-                if (e1 - s1 >= 2) verlines.push([j, s1, e1]);
+                len = e1 - s1;
+                if (len >= 2) verlines.push({x:j,y1: s1,y2: e1,len: len});
+            }
+            else if (usableBlocks[i][j] == 0) {
+                s1 = i;
+                e1 = i;
+                while (i < 2 * b + 1 && usableBlocks[i][j] === 0) {
+                    e1++;
+                    i++;
+                }
+                len = e1 - s1;
+                if (len >= 2) verfree.push({x:j,y1: s1,y2: e1,len: len,free: 1});
             }
         }
     }
@@ -273,19 +308,78 @@ function start(obj) {
     verlines.forEach(function (line) {
         drawVLines(line);
     });
+    verlines.sortOn('len')
+    console.log(verlines);
+    console.log("verfree: ",verfree);
+    console.log("horfree: ",horfree);
     
-    function drawLoop(){
-        console.log(updateCanvas);
-        if(updateCanvas)
-        {   var count=0;
-            var obj=[];
-            for(i=0;i<rectangles.length;i++)
-           { if(Math.abs(rectangles[i].points[0].x-user.x)<5*gSize||Math.abs(rectangles[i].points[0].y-user.y)<5*gSize)
-            {obj.push(rectangles[i]); count++;}
-    }       console.log(count);
+    var enemies=[];
+    var fps = {
+    startTime : 0,
+    frameNumber : 0,
+    getFPS : function(){
+        this.frameNumber++;
+        var d = new Date().getTime(),
+            currentTime = ( d - this.startTime ) / 1000,
+            result = Math.floor( ( this.frameNumber / currentTime ) );
+
+        if( currentTime > 1 ){
+            this.startTime = new Date().getTime();
+            this.frameNumber = 0;
+        }
+        return result;
+
+    }   
+};
+    function initEnemies(){
+        var i,pos;
+        var vertical=[];
+        /*for(i=0;vertical.length<=a/3;i++)
+        {
+            pos=Math.floor(Math.random(2*b+1));
+            if(vertical.indexOf(pos)){
+                verfree.forEach(function(vline){
+                    if (pos==vline.x && vline.len>=3 && vline.free==1)
+                        vertical.push(vline);
+                        vline.free=0;
+                })
+            }
+        }
+        //console.log(vertical)
+        for(i=0;i<=a/3;i++)
+            {*/
+                enemies.push(new Enemy(verfree[1]));
+                enemies.push(new Enemy(verfree[3]));
+                enemies.push(new Enemy(verfree[5]));
+                enemies.forEach(function(e){
+                    e.draw();
+                })
+
+                //}
+    }
+    initEnemies();
+    console.log(enemies);
+    var fpsa=document.getElementById('fps');
+    function drawLoop() {
+        //var time=new Date();
+        //console.log(time)
+        if (updateCanvas) {
+            var count = 0;
+            var obj = [];
+            for (i = 0; i < rectangles.length; i++) {
+                if (Math.abs(rectangles[i].points[0].x - user.x) < 5 * gSize || Math.abs(rectangles[i].points[0].y - user.y) < 5 * gSize) {
+                    obj.push(rectangles[i]);
+                    count++;
+                }
+            }
+            console.log(count);
             start(obj);
-            updateCanvas=!updateCanvas;
-        }   
+            updateCanvas = !updateCanvas;
+        }
+        enemies.forEach(function(e){
+                    e.move();
+                });
+        fpsa.innerHTML=fps.getFPS()
 
         requestAnimFrame(drawLoop);
     }

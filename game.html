@@ -7,18 +7,27 @@
         <script src="jquery.min.js"></script>
         <script src="maze3.js"></script>
         <style>
+        	body{
+        		background:#000;
+        	}
             canvas {
+
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
             }
+            #fps{
+            	color:white;
+            }
         </style>
     </head>
     
     <body>
-        <canvas id="canvasMaze" style='z-index = 100'></canvas>
+    	<div id="fps"></div>
+        <canvas id="canvasMaze" style='z-index = 1'></canvas>
         <canvas id="canvasMotion" style='z-index = 2'></canvas>
+        <script src='enemy.js'></script>
         <script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>
     </body>
