@@ -21,7 +21,7 @@ ctxMaze = canvasMaze.getContext('2d');
 
 //Properties
 var gSize = 40;
-var a = 15,
+var a = 10,
     b = 7;
 var color = 'darkred';
 width = canvasMaze.width = (a * 2 + 1) * gSize;
@@ -106,12 +106,13 @@ function drawHLines(line) {
 }
 
 function User() {
-    this.x = gSize + 20;
-    this.y = 20;
+    this.x = gSize*1.5;
+    this.y = gSize/2;
     this.xG = 1;
     this.yG = 0;
     this.color = 'white';
-    this.radius = gSize / 3;
+    this.radius = gSize / 4;
+    this.speed = gSize/2;
 }
 User.prototype = {
     draw: function () {
@@ -124,23 +125,22 @@ User.prototype = {
         var keys = [37, 38, 39, 40]
         switch (evt.keyCode) {
             case 37:
-                this.x -= 20;
+                this.x -= this.speed;
                 break;
             case 38:
-                this.y -= 20;
+                this.y -= this.speed;
                 break;
             case 39:
-                this.x += 20;
+                this.x += this.speed;
                 break;
             case 40:
-                this.y += 20;
+                this.y += this.speed;
                 break;
         }
         if (keys.indexOf(evt.keyCode) != -1) {
             ctx2.clearRect(0, 0, width, height);
             if (this.collide(evt.keyCode)) console.log('Collision');
         }
-        start();
     },
     collide: function (key) {
         var collision = 0;
@@ -167,16 +167,16 @@ User.prototype = {
         if (collision) {
             switch (key) {
                 case 37:
-                    this.x += 20;
+                    this.x += this.speed;
                     break;
                 case 38:
-                    this.y += 20;
+                    this.y += this.speed;
                     break;
                 case 39:
-                    this.x -= 20;
+                    this.x -= this.speed;
                     break;
                 case 40:
-                    this.y -= 20;
+                    this.y -= this.speed;
                     break;
             }
         }
@@ -186,17 +186,14 @@ User.prototype = {
 
 var count = 100;
 
-function start() {
-    var obj=[];
+function start(obj) {
+    
     console.log(user.xG,user.yG);
     
     var dist=200;
     /*if (count > 20) dist = (count--) * 10;
     else dist = 200;*/
-    rectangles.forEach(function(r){
-        if(Math.abs(r.points[0].x-user.x)<dist||Math.abs(r.points[0].y-user.y)<dist)
-            obj.push(r);
-    })
+    
     var canvas = canvasMaze;
     var ctx = ctxMaze;
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -220,11 +217,13 @@ function start() {
     //setInterval(start,60);
 }
 (function () {
+    var updateCanvas=true;
     drawMaze();
     var i, j;
     var mouse = {};
     user = new User();
     window.addEventListener('keydown', function (e) {
+        updateCanvas=true;
         user.move(e);
     }, false);
 
@@ -274,5 +273,22 @@ function start() {
     verlines.forEach(function (line) {
         drawVLines(line);
     });
-start();
+    
+    function drawLoop(){
+        console.log(updateCanvas);
+        if(updateCanvas)
+        {   var count=0;
+            var obj=[];
+            for(i=0;i<rectangles.length;i++)
+           { if(Math.abs(rectangles[i].points[0].x-user.x)<5*gSize||Math.abs(rectangles[i].points[0].y-user.y)<5*gSize)
+            {obj.push(rectangles[i]); count++;}
+    }       console.log(count);
+            start(obj);
+            updateCanvas=!updateCanvas;
+        }   
+
+        requestAnimFrame(drawLoop);
+    }
+    drawLoop();
+
 })();
