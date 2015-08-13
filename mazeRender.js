@@ -27,8 +27,8 @@ ctxMaze = canvasMaze.getContext('2d');
 
 //Properties
 var gSize = 40;
-var a = 5,
-    b = 5;
+var a = 15,
+    b = 7;
 var color = 'darkred';
 width = canvasMaze.width = (a * 2 + 1) * gSize;
 height = canvasMaze.height = (b * 2 + 1) * gSize;
