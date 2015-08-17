@@ -117,6 +117,10 @@ function User() {
     this.xG = 1;
     this.yG = 0;
     this.color = 'white';
+    this.up = false;
+    this.down = false;
+    this.left = false;
+    this.right = false;
     this.radius = gSize / 4;
     this.speed = gSize / 2;
 }
@@ -127,33 +131,56 @@ User.prototype = {
         ctx2.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx2.fill();
     },
-    move: function (evt) {
-        var keys = [37, 38, 39, 40]
+    keydown: function (evt) {
         switch (evt.keyCode) {
             case 37:
-                this.x -= this.speed;
+                this.left = true;
                 break;
             case 38:
-                this.y -= this.speed;
+                this.up = true;
                 break;
             case 39:
-                this.x += this.speed;
+                this.right = true;
                 break;
             case 40:
-                this.y += this.speed;
+                this.down = true;
                 break;
         }
-        if (keys.indexOf(evt.keyCode) != -1) {
-
-            ctx2.clearRect(this.x - gSize, this.y - gSize, 2 * gSize, 2 * gSize);
-            if (this.collide(evt.keyCode)) console.log('Collision');
+        
+    },
+    keyup: function (evt) {
+        switch (evt.keyCode) {
+            case 37:
+                this.left = false;
+                break;
+            case 38:
+                this.up = false;
+                break;
+            case 39:
+                this.right = false;
+                break;
+            case 40:
+                this.down = false;
+                break;
         }
     },
-    collide: function (key, collision) {
+    move: function (evt) {
+            if (this.left)
+                this.x -= this.speed;
+            else if (this.up)
+                    this.y -= this.speed;
+            else if(this.right)
+                this.x += this.speed;
+            else if(this.down)
+                this.y += this.speed;
+        
+            if (this.collide()) console.log('Collision');
+    },
+    collide: function () {
         var collision = 0;
-        this.xG = Math.floor((this.x + this.radius) / gSize);
+        this.xG = Math.floor((this.x) / gSize);
 
-        this.yG = Math.floor((this.y + this.radius) / gSize);
+        this.yG = Math.floor((this.y) / gSize);
         if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
 
         this.yG = Math.floor((this.y - this.radius) / gSize);
@@ -167,22 +194,18 @@ User.prototype = {
         this.yG = Math.floor((this.y + this.radius) / gSize);
         if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
 
-
+        
         if (collision) {
-            switch (key) {
-                case 37:
-                    this.x += this.speed;
-                    break;
-                case 38:
-                    this.y += this.speed;
-                    break;
-                case 39:
-                    this.x -= this.speed;
-                    break;
-                case 40:
-                    this.y -= this.speed;
-                    break;
-            }
+            
+                if (this.left)
+                this.x += this.speed;
+        else if (this.up)
+            this.y += this.speed;
+        else if(this.right)
+            this.x -= this.speed;
+        else if(this.down)
+            this.y -= this.speed;
+            
         }
         return collision;
     }
@@ -234,8 +257,14 @@ function start(obj) {
     user = new User();
     window.addEventListener('keydown', function (e) {
         updateCanvas = true;
-        user.move(e);
+        user.keydown(e);
     }, false);
+    window.addEventListener('keyup', function (e) {
+       // updateCanvas = false;
+        user.keyup(e);
+
+    }, false);
+
 
     for (i = 0; i < 2 * b + 1; i++)
     for (j = 0; j < 2 * a + 1; j++) {
@@ -364,6 +393,7 @@ function start(obj) {
         //var time=new Date();
         //console.log(time)
         if (updateCanvas) {
+            ctx2.clearRect(0, 0, width, height);
             var count = 0;
             var obj = [];
             for (i = 0; i < rectangles.length; i++) {
@@ -373,6 +403,7 @@ function start(obj) {
                 }
             }
             console.log(count);
+            user.move();
             start(obj);
             updateCanvas = !updateCanvas;
         }
@@ -381,7 +412,7 @@ function start(obj) {
                 });
         fpsa.innerHTML=fps.getFPS()
 
-        requestAnimFrame(drawLoop);
+        requestAnimationFrame(drawLoop);
     }
     drawLoop();
 
