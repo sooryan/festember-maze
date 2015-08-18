@@ -6,27 +6,22 @@
         <title>Canvas Maze</title>
         <script src="jquery.min.js"></script>
         <script src="maze3.js"></script>
-        <style>
-        	body{
-        		background:#000;
-        	}
-            canvas {
-
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-            #fps{
-            	color:white;
-            }
-        </style>
+        <link rel="stylesheet" href="game.css">
     </head>
     
     <body>
-    	<div id="fps"></div>
+        <div id="fps"></div>
+        <div id="boxes">
+            <div id="dialog" class="window">
+                 <h1 style="margin:0;padding:0;color:white;"><b>Level Cleared!</b></h1>Enter or Esc to start next level!</div>
+            <div id="mask"></div>
+        </div>
+        
         <canvas id="canvasMaze" style='z-index = 1'></canvas>
-        <canvas id="canvasMotion" style='z-index = 2'></canvas>
+        <canvas id="canvasMotion" style='z-index = 3'></canvas>
+        <canvas id="light" ></canvas>
+
+        <script src='user.js'></script>
         <script src='enemy.js'></script>
         <script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>

@@ -5,10 +5,10 @@ function Enemy(line) {
     this.y2 = line.y2*gSize;
     this.xG = line.x;
     this.yG = line.y1;
-    this.color = 'red';
+    this.color = 'black';
     this.radius = gSize / 4;
     this.speed = 1;
-    this.canvas = document.getElementById('canvasMotion');
+    this.canvas = document.getElementById('light');
     this.ctx = this.canvas.getContext('2d');
     //console.log(this.canvas);
 }

@@ -1,0 +1,47 @@
+#mask {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position:absolute;
+    z-index:10;
+    background-color:#000;
+    display:none;
+    overflow:none;
+    text-align:center;
+}
+#boxes .window {
+    position:fixed;
+    width:440px;
+    height:200px;
+    display:none;
+    z-index:9999;
+    padding:20px;
+}
+#boxes #dialog {
+    width: 50%;
+    height: 203px;
+    color: #fff;
+    font-size: 1 em;
+    overflow: none;
+}
+body {
+    overflow : none;
+    background:linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("bg.jpg");
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+canvas {
+    /*border: 5px solid rgba(255,255,255,0.1);*/
+    //box-shadow: 0pt 200px 200px rgba(105, 108, 109, 0.4);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#fps {
+    color:white;
+}
