@@ -1,12 +1,16 @@
 function consequences() {
     var obj = [];
-    if (user.collide()) console.log('Collision');
+    user.collide();
     for (i = 0; i < rectangles.length; i++) {
-        if (Math.abs(rectangles[i].points[0].x - user.x) < 5 * gSize || Math.abs(rectangles[i].points[0].y - user.y) < 5 * gSize) {
+        if (Math.abs(rectangles[i].points[0].x - user.x) < user.lightDist || Math.abs(rectangles[i].points[0].y - user.y) < user.lightDist) {
             obj.push(rectangles[i]);
 
         }
     }
+    if (enemies[0].color == 'white' || enemies[0].color == '#000') {
+        user.color = 'black';
+    }
+
     start(obj);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
@@ -18,7 +22,13 @@ function User() {
     this.y = gSize / 2;
     this.xG = 1;
     this.yG = 0;
+    this.life = 1;
+    this.killMode = false;
+    this.killTime = 200;
+    this.coolOff = false;
     this.color = 'white';
+    this.lightColor = '#F1DC96';
+    this.lightDist = 200;
     this.keys = {
         up: false,
         down: false,
@@ -27,7 +37,7 @@ function User() {
     };
 
     this.radius = gSize / 4;
-    this.speed = gSize / 2;
+    this.speed = gSize / 4;
 }
 User.prototype = {
     draw: function () {
@@ -39,10 +49,24 @@ User.prototype = {
 
     keydown: function (evt) {
         updateCanvas = true;
-        if(evt.keyCode==32){
-            this.speed=gSize;
-            this.color='red';
-            user.draw();
+        if (evt.keyCode == 32) {
+            this.killMode = true;
+            console.log(this.killTime, this.coolOff)
+
+            if (this.coolOff == false) {
+                if (this.killTime > 2) {
+                    this.killTime -= 2;
+                }
+            }
+            if (this.killTime < 3) {
+                this.coolOff = true;
+            }
+            this.speed = gSize;
+            this.lightColor = 'red';
+            this.color = 'rgba(255,255,255,0.7)';
+            this.lightDist = 50 * this.killTime * 0.01;
+            consequences();
+
         }
         switch (evt.keyCode) {
             case 37:
@@ -62,10 +86,12 @@ User.prototype = {
     },
 
     keyup: function (evt) {
-        if(evt.keyCode==32){
-            this.speed=gSize/2;
-            this.color='white';
-            this.draw();
+        if (evt.keyCode == 32) {
+            this.speed = gSize / 4;
+            this.lightColor = 'rgba(250,220,150,0.6)';
+            this.color = 'white';
+            this.lightDist = 200;
+            consequences();
         }
         switch (evt.keyCode) {
             case 37:
@@ -86,16 +112,13 @@ User.prototype = {
         if (this.keys.left) {
             this.x -= this.speed;
             consequences();
-        }
-        else if (this.keys.up) {
+        } else if (this.keys.up) {
             this.y -= this.speed;
             consequences();
-        }
-        else if (this.keys.right) {
+        } else if (this.keys.right) {
             this.x += this.speed;
             consequences();
-        }
-        else if (this.keys.down) {
+        } else if (this.keys.down) {
             this.y += this.speed;
             consequences();
         }
@@ -104,7 +127,7 @@ User.prototype = {
             end = 1;
             stuff();
         }
-        
+
     },
     collide: function () {
         var collision = 0;
@@ -128,16 +151,12 @@ User.prototype = {
 
             if (this.keys.left) {
                 this.x += this.speed;
-                //this.keys.left=false;
             } else if (this.keys.up) {
                 this.y += this.speed;
-                //this.keys.up=false;
             } else if (this.keys.right) {
                 this.x -= this.speed;
-                //this.keys.right=false;
             } else if (this.keys.down) {
                 this.y -= this.speed;
-                //this.keys.down=false;
             }
 
         }

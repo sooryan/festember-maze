@@ -1,8 +1,6 @@
 function stuff() {
 
     var id = $(this);
-    var maskHeight = $(document).height();
-    var maskWidth = $(window).width();
 
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
@@ -17,7 +15,18 @@ $(document).keyup(function (e) {
         if (e.keyCode == 13 || e.keyCode == 27) {
             $('#mask').hide();
             $('.window').hide();
+            if (b < 7) b++;
+            if (a < 15) a++;
+            if (b == 5) gSize = 50;
+            else gSize = 40;
             location.reload();
+            var level = {
+                a: a,
+                b: b,
+                gSize: gSize
+            };
+            window.sessionStorage.setItem("level", JSON.stringify(level));
+            //gameStart(a,b,gSize);
             end = 0;
         }
     }
@@ -28,7 +37,7 @@ window.requestAnimFrame = (function () {
         window.setTimeout(callback, 1000 / 60);
     };
 })();
-var end;
+var end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
 Array.prototype.sortOn = function (key) {
     this.sort(function (a, b) {
         if (a[key] < b[key]) {
@@ -42,32 +51,38 @@ Array.prototype.sortOn = function (key) {
 
 var Lamp = illuminated.Lamp,
     RectangleObject = illuminated.RectangleObject,
+    OpaqueObject = illuminated.OpaqueObject,
     DiscObject = illuminated.DiscObject,
     Vec2 = illuminated.Vec2,
-    Lighting = illuminated.Lighting;
+    Lighting = illuminated.Lighting,
+    DarkMask = illuminated.DarkMask;
 var rectangles = [];
-/*--------------------------MAZE--------------------------*/
-canvasMaze = document.getElementById('canvasMaze');
-ctxMaze = canvasMaze.getContext('2d');
 
-//Properties
-var gSize = 40;
-var a = 15,
-    b = 7;
-//var color = 'darkred';
-width = canvasMaze.width = (a * 2 + 1) * gSize;
-height = canvasMaze.height = (b * 2 + 1) * gSize;
-/*--------------------------CANVAS2--------------------------*/
-canvas2 = document.getElementById('light');
-ctx2 = canvas2.getContext('2d');
-canvas2.width = width;
-canvas2.height = height;
-canvas2 = document.getElementById('canvasMotion');
-ctx2 = canvas2.getContext('2d');
-canvas2.width = width;
-canvas2.height = height;
 
-/*--------------------------DARKNESS-------------------------*/
+function initialize(A, B, size) {
+
+    canvasMaze = document.getElementById('canvasMaze');
+    ctxMaze = canvasMaze.getContext('2d');
+    //Properties
+    gSize = size || 40;
+    a = A || 15,
+    b = B || 7;
+    blocks = [],
+    usableBlocks = createArray(2 * b + 1, 2 * a + 1);
+    //var color = 'darkred';
+    width = canvasMaze.width = (a * 2 + 1) * gSize;
+    height = canvasMaze.height = (b * 2 + 1) * gSize;
+    /*--------------------------CANVAS2--------------------------*/
+    canvas2 = document.getElementById('light');
+    ctx2 = canvas2.getContext('2d');
+    canvas2.width = width;
+    canvas2.height = height;
+    canvas2 = document.getElementById('canvasMotion');
+    ctx2 = canvas2.getContext('2d');
+    canvas2.width = width;
+    canvas2.height = height;
+}
+
 function createArray(length) {
     var arr = new Array(length || 0),
         i = length;
@@ -80,9 +95,6 @@ function createArray(length) {
     return arr;
 }
 //positions of blocks
-var blocks = [],
-    usableBlocks = createArray(2 * b + 1, 2 * a + 1);
-
 function drawMaze() {
     //ctxMaze.clearRect(0, 0, width, height);
     var blocks = new Array();
@@ -125,48 +137,56 @@ function drawVLines(line) {
     var i = line.x * gSize,
         j1 = line.y1 * gSize
         j2 = line.y2 * gSize;
-    rectangles.push(new RectangleObject({
+    rectangles.push(new OpaqueObject(new RectangleObject({
         topleft: new Vec2(i, j1),
         bottomright: new Vec2(i + gSize, j2)
-    }));
+    }), 1));
 }
 
 function drawHLines(line) {
     var j = line.y * gSize,
         i1 = line.x1 * gSize
         i2 = line.x2 * gSize;
-    rectangles.push(new RectangleObject({
+    rectangles.push(new OpaqueObject(new RectangleObject({
         topleft: new Vec2(i1, j),
         bottomright: new Vec2(i2, j + gSize)
-    }));
+    }), 1));
 }
 
 function start(obj) {
-
-    var dist = 200;
-
     var canvas = canvasMaze;
     var ctx = ctxMaze;
-
+    var bgcol = enemies[0].color;
     var light = new Lamp({
         position: new Vec2(user.x, user.y),
+        color: user.lightColor,
         radius: 0,
-        samples: 4,
-        distance: dist
+        samples: 3,
+        distance: user.lightDist
     });
-
     var lighting = new Lighting({
         light: light,
         objects: obj
     });
+
     lighting.compute(canvas.width, canvas.height);
-    ctx.fillStyle = "black";
+
+    ctx.fillStyle = bgcol;
 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    obj.forEach(function (o) {
+        ctx.fillStyle = bgcol;
+        ctx.beginPath();
+        o.path(ctx);
+        ctx.fill();
+    })
     lighting.render(ctx);
-    user.draw();
+
 }
-(function () {
+
+function gameStart(rows, cols, size) {
+    initialize(rows, cols, size);
+    console.log(a, b);
     var fpsa = document.getElementById('fps');
     var updateCanvas = true;
     drawMaze();
@@ -209,7 +229,7 @@ function start(obj) {
             }
             len = e1 - s1;
             if (len >= 2)
-              /*if(usableBlocks[i-1][j-1] == 1|| usableBlocks[i+1][j-1] == 1) 
+            /*if(usableBlocks[i-1][j-1] == 1|| usableBlocks[i+1][j-1] == 1) 
                 horlines.push({
                 y: i,
                 x1: s1,
@@ -217,11 +237,12 @@ function start(obj) {
                 len: len-1
             });
               else
-              */  horlines.push({
+              */
+            horlines.push({
                 y: i,
                 x1: s1,
                 x2: e1,
-                len: len-1
+                len: len - 1
             });
 
 
@@ -254,16 +275,13 @@ function start(obj) {
                 }
 
                 len = e1 - s1;
-                if (len >= 2) 
-                  /*if(usableBlocks[i-1][j-1]==1 || usableBlocks[i-1][j+1]==1)
-                    verlines.push({
+                if (len >= 2) if (usableBlocks[i - 1][j - 1] == 1 || usableBlocks[i - 1][j + 1] == 1) verlines.push({
                     x: j,
                     y1: s1,
-                    y2: e1-1,
-                    len: len-1
+                    y2: e1 - 1,
+                    len: len - 1
                 });
-                  else*/
-                    verlines.push({
+                else verlines.push({
                     x: j,
                     y1: s1,
                     y2: e1,
@@ -282,7 +300,7 @@ function start(obj) {
                     x: j,
                     y1: s1,
                     y2: e1,
-                    len: len-1,
+                    len: len - 1,
                     free: 1
                 });
             }
@@ -296,7 +314,7 @@ function start(obj) {
     });
     verlines.sortOn('len')
 
-    var enemies = [];
+    enemies = [];
 
     var fps = {
         startTime: 0,
@@ -342,7 +360,7 @@ for(i=0;i<=a/3;i++)
         //}
     }
     initEnemies();
-
+    console.log(enemies[0].color);
     consequences();
 
     function drawLoop() {
@@ -352,9 +370,18 @@ for(i=0;i<=a/3;i++)
         });
         fpsa.innerHTML = fps.getFPS()
         user.move();
-
+        if (user.coolOff) {
+            user.killTime += 1;
+            if (user.killTime == 200) {
+                user.coolOff = false;
+            }
+        }
         requestAnimationFrame(drawLoop);
     }
     drawLoop();
 
-})();
+};
+var level = JSON.parse(window.sessionStorage.getItem("level"));
+console.log(level);
+if (level == null) gameStart(5, 5, 50);
+else gameStart(level.a, level.b, level.gSize);
