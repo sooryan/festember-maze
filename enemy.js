@@ -26,7 +26,7 @@ Enemy.prototype = {
         this.ctx.clearRect(this.x - this.radius - 1, this.y - gSize, 2 * this.radius + 2, gSize * 1.5);
         this.draw();
     },
-    collide: function (key, collision) {
+    collide: function () {
         var collision = 0;
         this.xG = Math.floor(this.x / gSize);
 

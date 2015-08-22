@@ -1,4 +1,4 @@
-#mask {
+/* #mask {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -9,23 +9,25 @@
     display:none;
     overflow:none;
     text-align:center;
+} */
+#maze {
+    color:white;
+    white-space: pre;
 }
 #boxes .window {
-    position:fixed;
-    width:440px;
-    height:200px;
     display:none;
+    width:300px;
+    height:150px;
+    border:2px solid white;
     z-index:9999;
-    padding:20px;
-}
-#boxes #dialog {
-    width: 50%;
-    height: 203px;
-    color: #fff;
-    font-size: 1 em;
-    overflow: none;
+    position: absolute;
+    text-align:center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 body {
+    color:white;
     overflow : none;
     background:linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("bg.jpg");
     background-attachment: fixed;

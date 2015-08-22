@@ -1,9 +1,11 @@
-function stuff() {
+function stuff(win) {
 
     var id = $(this);
 
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
+    if(win==0)
+    $('#boxes').html('<div id="dialog" class="window"><h1><b>Noob</b></h1>Enter or Esc to restart!</div><div id="mask"></div>')
     setTimeout(function () {
         $('#mask').show();
         $('.window').show();
@@ -30,8 +32,20 @@ $(document).keyup(function (e) {
             end = 0;
         }
     }
+    else if (end == 2) {
+        if (e.keyCode == 13 || e.keyCode == 27) {
+            $('#mask').hide();
+            $('.window').hide();
+            
+            location.reload();
+            window.sessionStorage.clear();
+            end = 0;
+        }
+    }
 });
+function ckeckKills(){
 
+}
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / 60);
@@ -137,10 +151,10 @@ function drawVLines(line) {
     var i = line.x * gSize,
         j1 = line.y1 * gSize
         j2 = line.y2 * gSize;
-    rectangles.push(new OpaqueObject(new RectangleObject({
+    rectangles.push(new RectangleObject({
         topleft: new Vec2(i, j1),
-        bottomright: new Vec2(i + gSize, j2)
-    }), 1));
+        bottomright: new Vec2(i + gSize, j2),diffuse:0.1
+    }));
 }
 
 function drawHLines(line) {
@@ -149,14 +163,13 @@ function drawHLines(line) {
         i2 = line.x2 * gSize;
     rectangles.push(new OpaqueObject(new RectangleObject({
         topleft: new Vec2(i1, j),
-        bottomright: new Vec2(i2, j + gSize)
+        bottomright: new Vec2(i2, j + gSize),diffuse:0.1
     }), 1));
 }
-
+var bgcol;
 function start(obj) {
     var canvas = canvasMaze;
     var ctx = ctxMaze;
-    var bgcol = enemies[0].color;
     var light = new Lamp({
         position: new Vec2(user.x, user.y),
         color: user.lightColor,
@@ -361,7 +374,13 @@ for(i=0;i<=a/3;i++)
     }
     initEnemies();
     console.log(enemies[0].color);
+    bgcol=enemies[0].color;
+    if (bgcol == 'white' || bgcol == '#000') {
+        user.color = '#F1DC96';
+        user.lightColor= 'black';
+    }
     consequences();
+
 
     function drawLoop() {
 
@@ -370,12 +389,10 @@ for(i=0;i<=a/3;i++)
         });
         fpsa.innerHTML = fps.getFPS()
         user.move();
-        if (user.coolOff) {
+        if (user.killTime<200) {
             user.killTime += 1;
-            if (user.killTime == 200) {
-                user.coolOff = false;
-            }
         }
+        if(end!=2)
         requestAnimationFrame(drawLoop);
     }
     drawLoop();

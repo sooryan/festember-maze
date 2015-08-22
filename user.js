@@ -4,18 +4,42 @@ function consequences() {
     for (i = 0; i < rectangles.length; i++) {
         if (Math.abs(rectangles[i].points[0].x - user.x) < user.lightDist || Math.abs(rectangles[i].points[0].y - user.y) < user.lightDist) {
             obj.push(rectangles[i]);
-
         }
     }
-    if (enemies[0].color == 'white' || enemies[0].color == '#000') {
-        user.color = 'black';
+    if(user.killMode){
+        if (user.killTime > 2) {
+                user.killTime -= 10;
+                if(user.killTime<0)
+                    user.killTime=1;
+            }
+        user.lightDist = 50 * user.killTime * 0.01;
     }
+    enemies.forEach(function(e){
+        var dist=Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
+        if(user.killMode==true){
+            if (dist<user.lightDist)
+              enemies.splice(enemies.indexOf(e),1);
+      }
+      else{
+        if (dist<2*user.radius){
+            user.keys = {
+                up: false,
+                down: false,
+                right: false,
+                left: false
+            };
 
-    start(obj);
+            end = 2;
+            stuff(0);}
+        }
+
+    })
+    
+    start(rectangles);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
-
 }
+
 
 function User() {
     this.x = gSize * 1.5;
@@ -28,7 +52,7 @@ function User() {
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';
-    this.lightDist = 200;
+    this.lightDist = Math.floor(Math.sqrt(a*b))*gSize/2.5;
     this.keys = {
         up: false,
         down: false,
@@ -53,15 +77,7 @@ User.prototype = {
             this.killMode = true;
             console.log(this.killTime, this.coolOff)
 
-            if (this.coolOff == false) {
-                if (this.killTime > 2) {
-                    this.killTime -= 2;
-                }
-            }
-            if (this.killTime < 3) {
-                this.coolOff = true;
-            }
-            this.speed = gSize;
+            
             this.lightColor = 'red';
             this.color = 'rgba(255,255,255,0.7)';
             this.lightDist = 50 * this.killTime * 0.01;
@@ -70,42 +86,45 @@ User.prototype = {
         }
         switch (evt.keyCode) {
             case 37:
-                this.keys.left = true;
-                break;
+            this.keys.left = true;
+            break;
             case 38:
-                this.keys.up = true;
-                break;
+            this.keys.up = true;
+            break;
             case 39:
-                this.keys.right = true;
-                break;
+            this.keys.right = true;
+            break;
             case 40:
-                this.keys.down = true;
-                break;
+            this.keys.down = true;
+            break;
         }
 
     },
 
     keyup: function (evt) {
+
         if (evt.keyCode == 32) {
+            this.killMode = false;
             this.speed = gSize / 4;
-            this.lightColor = 'rgba(250,220,150,0.6)';
+            this.lightColor = '#F1DC96';
             this.color = 'white';
-            this.lightDist = 200;
+            this.lightDist = Math.floor(Math.sqrt(a*b))*gSize/2.5;
             consequences();
+            
         }
         switch (evt.keyCode) {
             case 37:
-                this.keys.left = false;
-                break;
+            this.keys.left = false;
+            break;
             case 38:
-                this.keys.up = false;
-                break;
+            this.keys.up = false;
+            break;
             case 39:
-                this.keys.right = false;
-                break;
+            this.keys.right = false;
+            break;
             case 40:
-                this.keys.down = false;
-                break;
+            this.keys.down = false;
+            break;
         }
     },
     move: function (evt) {
@@ -125,7 +144,7 @@ User.prototype = {
         if (this.y < gSize * 0.5) this.y = gSize * 0.5;
         else if (this.y >= height - this.radius) {
             end = 1;
-            stuff();
+            stuff(1);
         }
 
     },
