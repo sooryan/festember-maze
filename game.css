@@ -10,7 +10,7 @@
     overflow:none;
     text-align:center;
 } */
-#maze {
+ #maze {
     color:white;
     white-space: pre;
 }
@@ -18,7 +18,7 @@
     display:none;
     width:300px;
     height:150px;
-    border:2px solid white;
+    background-color: rgba(255, 0, 0, 0.5);
     z-index:9999;
     position: absolute;
     text-align:center;

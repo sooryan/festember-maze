@@ -6,35 +6,15 @@ function consequences() {
             obj.push(rectangles[i]);
         }
     }
-    if(user.killMode){
+    if (user.killMode) {
         if (user.killTime > 2) {
-                user.killTime -= 10;
-                if(user.killTime<0)
-                    user.killTime=1;
-            }
+            user.killTime -= 10;
+            if (user.killTime < 0) user.killTime = 1;
+        }
         user.lightDist = 50 * user.killTime * 0.01;
     }
-    enemies.forEach(function(e){
-        var dist=Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
-        if(user.killMode==true){
-            if (dist<user.lightDist)
-              enemies.splice(enemies.indexOf(e),1);
-      }
-      else{
-        if (dist<2*user.radius){
-            user.keys = {
-                up: false,
-                down: false,
-                right: false,
-                left: false
-            };
 
-            end = 2;
-            stuff(0);}
-        }
 
-    })
-    
     start(rectangles);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
@@ -52,7 +32,7 @@ function User() {
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';
-    this.lightDist = Math.floor(Math.sqrt(a*b))*gSize/2.5;
+    this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
     this.keys = {
         up: false,
         down: false,
@@ -75,9 +55,6 @@ User.prototype = {
         updateCanvas = true;
         if (evt.keyCode == 32) {
             this.killMode = true;
-            console.log(this.killTime, this.coolOff)
-
-            
             this.lightColor = 'red';
             this.color = 'rgba(255,255,255,0.7)';
             this.lightDist = 50 * this.killTime * 0.01;
@@ -86,17 +63,17 @@ User.prototype = {
         }
         switch (evt.keyCode) {
             case 37:
-            this.keys.left = true;
-            break;
+                this.keys.left = true;
+                break;
             case 38:
-            this.keys.up = true;
-            break;
+                this.keys.up = true;
+                break;
             case 39:
-            this.keys.right = true;
-            break;
+                this.keys.right = true;
+                break;
             case 40:
-            this.keys.down = true;
-            break;
+                this.keys.down = true;
+                break;
         }
 
     },
@@ -108,23 +85,23 @@ User.prototype = {
             this.speed = gSize / 4;
             this.lightColor = '#F1DC96';
             this.color = 'white';
-            this.lightDist = Math.floor(Math.sqrt(a*b))*gSize/2.5;
+            this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
             consequences();
-            
+
         }
         switch (evt.keyCode) {
             case 37:
-            this.keys.left = false;
-            break;
+                this.keys.left = false;
+                break;
             case 38:
-            this.keys.up = false;
-            break;
+                this.keys.up = false;
+                break;
             case 39:
-            this.keys.right = false;
-            break;
+                this.keys.right = false;
+                break;
             case 40:
-            this.keys.down = false;
-            break;
+                this.keys.down = false;
+                break;
         }
     },
     move: function (evt) {

@@ -4,8 +4,14 @@ function stuff(win) {
 
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
-    if(win==0)
-    $('#boxes').html('<div id="dialog" class="window"><h1><b>Noob</b></h1>Enter or Esc to restart!</div><div id="mask"></div>')
+    if (win == 1) {
+        $('#boxes .window').css("background-color", "rgba(0,255,0,0.5)");
+    }
+    if (win == 0) {
+        $('#boxes').html('<div id="dialog" class="window"><h1><b>You shall not pass</b></h1>Enter or Esc to restart</div><div id="mask"></div>')
+        $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
+        window.sessionStorage.setItem("refresh",true);
+    }
     setTimeout(function () {
         $('#mask').show();
         $('.window').show();
@@ -21,37 +27,37 @@ $(document).keyup(function (e) {
             if (a < 15) a++;
             if (b == 5) gSize = 50;
             else gSize = 40;
-            location.reload();
+            lvl++;
+            
             var level = {
                 a: a,
                 b: b,
-                gSize: gSize
+                gSize: gSize,
+                level: lvl
             };
             window.sessionStorage.setItem("level", JSON.stringify(level));
+            location.reload();
             //gameStart(a,b,gSize);
             end = 0;
         }
-    }
-    else if (end == 2) {
+    } else if (end == 2) {
         if (e.keyCode == 13 || e.keyCode == 27) {
             $('#mask').hide();
             $('.window').hide();
-            
-            location.reload();
             window.sessionStorage.clear();
+            location.reload();
+            
             end = 0;
         }
     }
 });
-function ckeckKills(){
 
-}
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / 60);
     };
 })();
-var end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
+var lvl,end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
 Array.prototype.sortOn = function (key) {
     this.sort(function (a, b) {
         if (a[key] < b[key]) {
@@ -73,14 +79,16 @@ var Lamp = illuminated.Lamp,
 var rectangles = [];
 
 
-function initialize(A, B, size) {
+function initialize(A, B, size,l) {
 
     canvasMaze = document.getElementById('canvasMaze');
     ctxMaze = canvasMaze.getContext('2d');
+
     //Properties
-    gSize = size || 40;
-    a = A || 15,
-    b = B || 7;
+    gSize = size || 50;
+    a = A || 5,
+    b = B || 5;
+    lvl = l || 0;
     blocks = [],
     usableBlocks = createArray(2 * b + 1, 2 * a + 1);
     //var color = 'darkred';
@@ -95,6 +103,7 @@ function initialize(A, B, size) {
     ctx2 = canvas2.getContext('2d');
     canvas2.width = width;
     canvas2.height = height;
+    ctxMaze.clearRect(0,0,width,height);
 }
 
 function createArray(length) {
@@ -108,9 +117,8 @@ function createArray(length) {
 
     return arr;
 }
-//positions of blocks
+
 function drawMaze() {
-    //ctxMaze.clearRect(0, 0, width, height);
     var blocks = new Array();
     var i;
     for (i = 0; i < 2 * a + 1; i += 2) {
@@ -153,7 +161,8 @@ function drawVLines(line) {
         j2 = line.y2 * gSize;
     rectangles.push(new RectangleObject({
         topleft: new Vec2(i, j1),
-        bottomright: new Vec2(i + gSize, j2),diffuse:0.1
+        bottomright: new Vec2(i + gSize, j2),
+        diffuse: 0.1
     }));
 }
 
@@ -163,10 +172,12 @@ function drawHLines(line) {
         i2 = line.x2 * gSize;
     rectangles.push(new OpaqueObject(new RectangleObject({
         topleft: new Vec2(i1, j),
-        bottomright: new Vec2(i2, j + gSize),diffuse:0.1
+        bottomright: new Vec2(i2, j + gSize),
+        diffuse: 0.1
     }), 1));
 }
 var bgcol;
+
 function start(obj) {
     var canvas = canvasMaze;
     var ctx = ctxMaze;
@@ -197,9 +208,11 @@ function start(obj) {
 
 }
 
-function gameStart(rows, cols, size) {
-    initialize(rows, cols, size);
-    console.log(a, b);
+function gameStart(rows, cols, size,l) {
+    window.sessionStorage.setItem("refresh",false);
+    initialize(rows, cols, size,l);
+    $('#level').html('<h1>level '+lvl+'</h1>');
+
     var fpsa = document.getElementById('fps');
     var updateCanvas = true;
     drawMaze();
@@ -348,36 +361,27 @@ function gameStart(rows, cols, size) {
     };
 
     function initEnemies() {
-        var i, pos;
-        var vertical = [];
-        /*for(i=0;vertical.length<=a/3;i++)
-{
-pos=Math.floor(Math.random(2*b+1));
-if(vertical.indexOf(pos)){
-verfree.forEach(function(vline){
-if (pos==vline.x && vline.len>=3 && vline.free==1)
-vertical.push(vline);
-vline.free=0;
-})
-}
-}
-for(i=0;i<=a/3;i++)
-{*/
-        enemies.push(new Enemy(verfree[1]));
-        enemies.push(new Enemy(verfree[3]));
-        enemies.push(new Enemy(verfree[5]));
+        
+        var i,indices=new Array();
+        while(enemies.length<=verfree.length/3)
+        {
+            var index=Math.floor(Math.random()*verfree.length);
+            if (index==0) index=1;
+            if(indices.indexOf(index)==-1){
+                indices.push(index);
+                enemies.push(new Enemy(verfree[index]));
+            }
+        }
         enemies.forEach(function (e) {
             e.draw();
-        })
+        });
 
-        //}
     }
     initEnemies();
-    console.log(enemies[0].color);
-    bgcol=enemies[0].color;
+    bgcol = enemies[0].color||black;
     if (bgcol == 'white' || bgcol == '#000') {
         user.color = '#F1DC96';
-        user.lightColor= 'black';
+        user.lightColor = 'black';
     }
     consequences();
 
@@ -389,16 +393,45 @@ for(i=0;i<=a/3;i++)
         });
         fpsa.innerHTML = fps.getFPS()
         user.move();
-        if (user.killTime<200) {
-            user.killTime += 1;
+        if (user.killTime < 200) {
+            user.killTime += 0.1;
         }
-        if(end!=2)
-        requestAnimationFrame(drawLoop);
+        enemies.forEach(function (e) {
+            var dist = Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
+            if (user.killMode == true) {
+                if (dist < user.lightDist) {
+                    enemies.splice(enemies.indexOf(e), 1);
+                    setTimeout(function () {
+                        enemies.push(e)
+                    }, 2000);
+                }
+            } else {
+                if (dist < 2 * user.radius) {
+                    user.keys = {
+                        up: false,
+                        down: false,
+                        right: false,
+                        left: false
+                    };
+
+                    end = 2;
+                    stuff(0);
+                }
+            }
+
+        })
+        if (end != 2) requestAnimationFrame(drawLoop);
     }
     drawLoop();
 
 };
 var level = JSON.parse(window.sessionStorage.getItem("level"));
-console.log(level);
-if (level == null) gameStart(5, 5, 50);
-else gameStart(level.a, level.b, level.gSize);
+var refresh = window.sessionStorage.getItem("refresh");
+if (level == null) gameStart();
+else gameStart(level.a, level.b, level.gSize, level.level);
+
+if(refresh=='true'){
+    alert("Didn't your mom teach you to play fair? Back to level 0 for you.");
+    window.sessionStorage.clear();
+location.reload();}
+

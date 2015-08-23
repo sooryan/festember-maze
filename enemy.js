@@ -10,7 +10,6 @@ function Enemy(line) {
     this.speed = Math.floor(Math.random() * 5) + 1;
     this.canvas = document.getElementById('light');
     this.ctx = this.canvas.getContext('2d');
-    console.log(this.speed);
 }
 Enemy.prototype = {
 
@@ -31,7 +30,7 @@ Enemy.prototype = {
         this.xG = Math.floor(this.x / gSize);
 
         this.yG = Math.floor((this.y + this.radius) / gSize);
-        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1 || this.yG==(2*b+1)) collision = 1;
 
         this.yG = Math.floor((this.y - this.radius) / gSize);
         if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
