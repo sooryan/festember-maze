@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+    <html lang="en" prefix="og: http://ogp.me/ns#">
+    <meta property="og:title" content="Festember Maze"/>
+    <meta property="og:description" 
+  content="LoremLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+  proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
     
     <head>
         <meta charset="UTF-8">
@@ -10,17 +18,26 @@
     </head>
     
     <body>
-        <div id="fps"></div>
-        <div id="level"></div>
         
-        <div id="boxes">
+        <ul>
+          <li id='minutes'></li>
+          <li>:</li>
+          <li id='seconds'></li>
+        </ul>
+        <div id="fps" style = "display:none"></div>
+        <div>Lives: <span id = "lives">3</span> </div>
+
+        
+        <div id="boxes" >
             <div id="dialog" class="window">
                  <h1><b>Level Cleared!</b></h1>Enter or Esc to start next level!</div>
             <div id="mask"></div>
         </div>
-        <canvas id="canvasMaze" style='z-index = 1'></canvas>
-        <canvas id="canvasMotion" style='z-index = 3'></canvas>
+        <canvas id="canvasMaze" ></canvas>
+        <canvas id="canvasMotion" ></canvas>
         <canvas id="light"></canvas>
+        <div id="level"></div>
+        <!--<script type="text/javascript" src='all.js'></script>-->
         <script src='user.js'></script>
         <script src='enemy.js'></script>
         <script src='illuminated/illuminated.js'></script>

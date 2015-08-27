@@ -1,16 +1,18 @@
 function stuff(win) {
-
-    var id = $(this);
-
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
     if (win == 1) {
         $('#boxes .window').css("background-color", "rgba(0,255,0,0.5)");
     }
     if (win == 0) {
-        $('#boxes').html('<div id="dialog" class="window"><h1><b>You shall not pass</b></h1>Enter or Esc to restart</div><div id="mask"></div>')
+        var href = "javascript:fbShare('http://google.com', 'Fb Share', 'Popup', 'http://goo.gl/dS52U', 520, 350)";
+        console.log(href);
+        var message = '<div id="dialog" class="window"><h1><b>You shall not pass</b></h1>Enter or Esc to restart<br><a href="' + href + '">Share</a></div><div id="mask"></div>';
+        console.log(message);
+        $('#boxes').html(message)
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
-        window.sessionStorage.setItem("refresh",true);
+
+        window.sessionStorage.setItem("refresh", true);
     }
     setTimeout(function () {
         $('#mask').show();
@@ -18,6 +20,11 @@ function stuff(win) {
     }, 10);
 }
 
+function fbShare(url, title, descr, image, winWidth, winHeight) {
+    var winTop = (screen.height / 2) - (winHeight / 2);
+    var winLeft = (screen.width / 2) - (winWidth / 2);
+    window.open('http://www.facebook.com/sharer.php?s=100&p[title]=' + title + '&p[summary]=' + descr + '&p[url]=' + url + '&p[images][0]=' + image, 'sharer', 'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight);
+}
 $(document).keyup(function (e) {
     if (end == 1) {
         if (e.keyCode == 13 || e.keyCode == 27) {
@@ -28,15 +35,17 @@ $(document).keyup(function (e) {
             if (b == 5) gSize = 50;
             else gSize = 40;
             lvl++;
-            
+
             var level = {
                 a: a,
                 b: b,
                 gSize: gSize,
-                level: lvl
+                level: lvl,
+                lives: user.lives
             };
             window.sessionStorage.setItem("level", JSON.stringify(level));
             location.reload();
+            user.lives
             //gameStart(a,b,gSize);
             end = 0;
         }
@@ -44,9 +53,10 @@ $(document).keyup(function (e) {
         if (e.keyCode == 13 || e.keyCode == 27) {
             $('#mask').hide();
             $('.window').hide();
-            window.sessionStorage.clear();
-            location.reload();
-            
+            //window.sessionStorage.clear();
+            //if(user.lives<0)
+                location.reload();
+
             end = 0;
         }
     }
@@ -57,7 +67,7 @@ window.requestAnimFrame = (function () {
         window.setTimeout(callback, 1000 / 60);
     };
 })();
-var lvl,end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
+var points, bleh, lvl, end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
 Array.prototype.sortOn = function (key) {
     this.sort(function (a, b) {
         if (a[key] < b[key]) {
@@ -79,13 +89,23 @@ var Lamp = illuminated.Lamp,
 var rectangles = [];
 
 
-function initialize(A, B, size,l) {
+function initialize(A, B, size, l) {
+    var sec = 0;
+
+    function pad(val) {
+        return val > 9 ? val : "0" + val;
+    }
+    setInterval(function () {
+        $("#seconds").html(pad(++sec % 60));
+        $("#minutes").html(pad(parseInt(sec / 60, 10)));
+    }, 1000);
 
     canvasMaze = document.getElementById('canvasMaze');
     ctxMaze = canvasMaze.getContext('2d');
 
     //Properties
     gSize = size || 50;
+    sSize = gSize*window.innerWidth/1366;    
     a = A || 5,
     b = B || 5;
     lvl = l || 0;
@@ -103,8 +123,11 @@ function initialize(A, B, size,l) {
     ctx2 = canvas2.getContext('2d');
     canvas2.width = width;
     canvas2.height = height;
-    ctxMaze.clearRect(0,0,width,height);
+    ctxMaze.clearRect(0, 0, width, height);
 }
+$(document).bind('DOMSubtreeModified', function () {
+    //console.log("now there are " + $('canvas').length + " links on this page.");
+})
 
 function createArray(length) {
     var arr = new Array(length || 0),
@@ -208,10 +231,10 @@ function start(obj) {
 
 }
 
-function gameStart(rows, cols, size,l) {
-    window.sessionStorage.setItem("refresh",false);
-    initialize(rows, cols, size,l);
-    $('#level').html('<h1>level '+lvl+'</h1>');
+function gameStart(rows, cols, size, l) {
+    window.sessionStorage.setItem("refresh", false);
+    initialize(rows, cols, size, l);
+    $('#level').html('<h1>level ' + lvl + '</h1>');
 
     var fpsa = document.getElementById('fps');
     var updateCanvas = true;
@@ -219,6 +242,10 @@ function gameStart(rows, cols, size,l) {
     var i, j;
     var mouse = {};
     user = new User();
+    if (level == null) user.lives = 3;
+    else
+    user.lives = level.lives;
+$('#lives').html(user.lives);
     window.addEventListener('keydown', function (e) {
         user.keydown(e);
     }, false);
@@ -361,13 +388,12 @@ function gameStart(rows, cols, size,l) {
     };
 
     function initEnemies() {
-        
-        var i,indices=new Array();
-        while(enemies.length<=verfree.length/3)
-        {
-            var index=Math.floor(Math.random()*verfree.length);
-            if (index==0) index=1;
-            if(indices.indexOf(index)==-1){
+
+        var i, indices = new Array();
+        while (enemies.length <= verfree.length / 3) {
+            var index = Math.floor(Math.random() * verfree.length);
+            if (index == 0) index = 1;
+            if (indices.indexOf(index) == -1) {
                 indices.push(index);
                 enemies.push(new Enemy(verfree[index]));
             }
@@ -378,7 +404,7 @@ function gameStart(rows, cols, size,l) {
 
     }
     initEnemies();
-    bgcol = enemies[0].color||black;
+    bgcol = enemies[0].color || black;
     if (bgcol == 'white' || bgcol == '#000') {
         user.color = '#F1DC96';
         user.lightColor = 'black';
@@ -400,22 +426,40 @@ function gameStart(rows, cols, size,l) {
             var dist = Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
             if (user.killMode == true) {
                 if (dist < user.lightDist) {
+                    e.color = "rgba(0,0,0,0.4)";
+                    e.ctx.clearRect(e.x - e.radius - 1, e.y - gSize, 2 * e.radius + 2, gSize * 1.5);
+                    e.draw();
                     enemies.splice(enemies.indexOf(e), 1);
                     setTimeout(function () {
+                        e.color = 'black';
                         enemies.push(e)
                     }, 2000);
                 }
             } else {
                 if (dist < 2 * user.radius) {
+                    user.lives--;
+                    
+                    if (user.keys.left) {
+                    user.x += user.speed;
+                } else if (user.keys.up) {
+                    user.y += user.speed;
+                } else if (user.keys.right) {
+                    user.x -= user.speed;
+                } else if (user.keys.down) {
+                    user.y -= user.speed;
+                }
+                    
                     user.keys = {
                         up: false,
                         down: false,
                         right: false,
                         left: false
                     };
-
-                    end = 2;
-                    stuff(0);
+                    if(user.lives<0)
+                    {
+                        end = 2;
+                        stuff(0);
+                    }
                 }
             }
 
@@ -425,13 +469,13 @@ function gameStart(rows, cols, size,l) {
     drawLoop();
 
 };
+
 var level = JSON.parse(window.sessionStorage.getItem("level"));
+
 var refresh = window.sessionStorage.getItem("refresh");
 if (level == null) gameStart();
 else gameStart(level.a, level.b, level.gSize, level.level);
 
-if(refresh=='true'){
-    alert("Didn't your mom teach you to play fair? Back to level 0 for you.");
-    window.sessionStorage.clear();
-location.reload();}
-
+if (refresh == 'true') {
+    location.reload();
+}

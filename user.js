@@ -1,4 +1,5 @@
 function consequences() {
+    bleh=0;
     var obj = [];
     user.collide();
     for (i = 0; i < rectangles.length; i++) {
@@ -18,10 +19,12 @@ function consequences() {
     start(rectangles);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
+    //$('canvas').last().remove();
 }
 
 
 function User() {
+    this.lives = 3;
     this.x = gSize * 1.5;
     this.y = gSize / 2;
     this.xG = 1;
