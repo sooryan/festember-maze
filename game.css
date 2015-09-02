@@ -8,9 +8,8 @@ ul li {
 }
 #stats-container {
     position: absolute;
-    border:1px solid #000;
     top: 50%;
-    width: 100px;
+    width:150px;
     transform: translate(0, -50%);
     padding:0 20px 0 20px;
     background: rgba(255,255,255,0.1);
