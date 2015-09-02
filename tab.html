@@ -1,0 +1,284 @@
+<!doctype html>
+<body>
+<style>
+    html {
+    font-family:'Roboto Condensed', sans-serif;
+}
+/* Stats Container */
+#stats-container {
+    position: absolute;
+    border:1px solid #000;
+}
+#stats-container .float-left {
+    float:left;
+    margin:0;
+    padding:5px;
+}
+/* Some spacing */
+ .stat {
+    padding: 5px;
+    clear:both;
+}
+#content-container {
+    text-align: center;
+}
+ #health-bar {
+    position:relative;
+    background: #C90808;
+    height: 20px;
+    width: 100%;
+    z-index: 0;
+    padding: 0;
+    text-align: center;
+}
+#health-text {
+    top:-16px;
+    color:#fff;
+    z-index: 2;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+#health-remaining {
+    position:absolute;
+    left:0;
+    background: #009E03;
+    height: 20px;
+    width: 100%;
+    display: block;
+    z-index: 1;
+}
+#load-box {
+    display: none;
+}
+</style>
+    <input type="hidden" id="load_id" value="">
+    <div id="content-container">
+        <div id="stats-container">
+            <div id="level-s" class="stat">
+                	<h2>LvL <span id="level"></span></h2>
+
+            </div>
+            <div id="health-bar">
+                <p id="health-text"><span id="health"></span>/<span class="max-health"></span>
+                </p><span id="health-remaining"></span>
+
+            </div>
+            <div id="stat-s" class="stat">	<b>Available Stat Points: <span id="stat-points"></span></b>
+
+            </div>
+            <div id="health-s" class="stat">
+                <p class="float-left">Health: <span class="max-health"></span>
+                </p>
+
+            </div>
+            <div id="strength-s" class="stat">
+                <p class="float-left">Strength: <span id="strength"></span>
+                </p>
+            </div>
+</div>        </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+    (function () {
+
+    var Game = window.Game = window.Game || {};
+
+    Game.Character = function (obj) {
+        return {
+            health: /** {number} */
+            (!obj || !obj.health) ? 100 : obj.health,
+            max_health: /** {number} */
+            (!obj || !obj.health) ? 100 : obj.max_health,
+            strength: /** {number} */
+            (!obj || !obj.strength) ? 1 : obj.strength,
+            intellect: /** {number} */
+            (!obj || !obj.intellect) ? 1 : obj.intellect,
+            dexterity: /** {number} */
+            (!obj || !obj.dexterity) ? 1 : obj.dexterity,
+            level: /** {number} */
+            (!obj || !obj.level) ? 1 : obj.level,
+            experience: /** {number} */
+            (!obj || !obj.experience) ? 0 : obj.experience,
+            experience_tnl: /** {number} */
+            (!obj || !obj.experience_tnl) ? 50 : obj.experience_tnl,
+            stat_points: /** {number} */
+            (!obj || !obj.stat_points) ? 0 : obj.stat_points,
+            max_stat_points: /** {number} */
+            (!obj || !obj.max_stat_points) ? 0 : obj.max_stat_points,
+            can_level_stats: /** {boolean} */
+            (!obj || !obj.can_level_stats) ? false : obj.can_level_stats
+        };
+
+    };
+
+
+    // Gets the exp until next level based on advanced algorithm
+    Game.Character.get_experience_tnl = function (character) {
+
+        //Random algorithm that doesn't make sense at all
+        return (Math.pow((character.level * 10), 2));
+
+    };
+
+
+    // Checks if stats can be upgraded
+    Game.Character.check_can_level_stats = function (character) {
+
+        if (character.stat_points > 0 && character.stat_points <= character.max_stat_points) {
+
+            character.can_level_stats = true;
+
+        } else if (character.stat_points === 0 || character.stat_points > character.max_stat_points) {
+
+            character.can_level_stats = false;
+
+        }
+
+    };
+
+}());
+
+(function () {
+
+    var Game = window.Game = window.Game || {};
+
+    if (!Game.player) {
+
+        // Initialise Player on load to a character with default stats
+        Game.player = Game.Character();
+
+    }
+
+
+    if (!Game.time) {
+
+        // Initialise Game.Time
+        Game.time = {
+            frequency: 250,
+            previous: new Date(),
+            passed: 0,
+            paused: false
+        };
+
+    }
+
+
+    /* Updating variables on page when the document loads */
+    $(document).ready(function (e) {
+
+        // Initiate stats on screen
+        update_stats();
+
+        // Game Loop
+        var game_tick = setInterval(function () {
+
+            // Check if the game is paused. If not, run game.
+            if (!Game.time.paused) {
+
+                // Ensures that the game still functions when the tab is closed
+                var current_time = new Date();
+                var time_difference = (current_time.getTime() - Game.time.previous.getTime());
+
+                // Calculates the difference in time and returns multiplier
+                if (time_difference > Game.time.frequency) {
+
+                    if (Math.floor(time_difference / Game.time.frequency > 1)) {
+
+                        Game.time.passed = Math.floor(time_difference / Game.time.frequency);
+
+                    } else {
+
+                        Game.time.passed = 1;
+
+                    }
+
+                } else {
+
+                    Game.time.passed = 1;
+
+                }
+
+                Game.time.previous = new Date();
+                update_game();
+
+                // If game is paused, still allow the player to update stats
+            } else {
+                update_stats();
+            }
+
+        }, Game.time.frequency);
+
+    });
+
+    /* Grabs html stat objects and updates them */
+    var update_stats = function () {
+
+        // Updating stats
+        $("#stat-points").html(Game.player.stat_points);
+        $("#level").html(Game.player.level);
+        $("#health").html(Game.player.health);
+        $(".max-health").html(Game.player.max_health);
+        $("#strength").html(Game.player.strength);
+        $("#intellect").html(Game.player.intellect);
+        $("#dexterity").html(Game.player.dexterity);
+        $("#exp").html(Game.player.experience);
+        $("#exp-tnl").html(Game.player.experience_tnl);
+
+        // Updates stat visuals
+        change_stat_button_status();
+        update_healthbar();
+
+    };
+
+    /* Main game loop */
+    var update_game = function () {
+
+        // Adds exp each game tick
+        Game.player.experience += 10 * Game.time.passed;
+
+        // Checks if the player can level up
+        if (Game.player.experience > Game.player.experience_tnl) {
+
+            Game.player.experience -= Game.player.experience_tnl;
+            Game.player.experience_tnl = Game.Character.get_experience_tnl(Game.player);
+            Game.player.level += 1;
+            Game.player.stat_points += 2;
+            Game.player.max_stat_points += 2;
+
+        }
+
+        // Updates the players stats
+        update_stats();
+
+    };
+
+
+    // Checks if stats can be upgraded and shows + symbols if player can level stats
+    var change_stat_button_status = function () {
+
+        Game.Character.check_can_level_stats(Game.player);
+        if (Game.player.can_level_stats) {
+            $(".add-stat").addClass('purchase');
+        } else {
+            $(".add-stat").removeClass('purchase');
+        }
+
+    };
+
+    /* Adjusts the players visual health bar */
+    var update_healthbar = function () {
+
+        var health_remaining = $("#health-remaining");
+        var health_bar = $("#health-bar");
+
+        var width = (Game.player.health / Game.player.max_health) * health_bar.width();
+
+        health_remaining.width(width)
+
+    };
+
+
+}());
+</script>
+</body>

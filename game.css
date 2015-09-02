@@ -1,39 +1,75 @@
-/* #mask {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position:absolute;
-    z-index:10;
-    background-color:#000;
-    display:none;
-    overflow:none;
-    text-align:center;
-} */
-ul{
+ul {
     top:0;
-    padding:0;
+    padding:5px;
     list-style-type: none;
-    float:right;
-
 }
-ul li{
+ul li {
     display: inline;
+}
+#stats-container {
+    position: absolute;
+    border:1px solid #000;
+    top: 50%;
+    width: 100px;
+    transform: translate(0, -50%);
+    padding:0 20px 0 20px;
+    background: rgba(255,255,255,0.1);
+}
+#stats-container .float-left {
+    float:left;
+    margin:0;
+    padding:5px;
+}
+.stat {
+    clear:both;
+    
+}
+#content-container {
+    text-align: center;
+}
+#health-bar {
+    position:relative;
+    background: #C90808;
+    height: 35px;
+    width: 100%;
+    z-index: 0;
+    padding: 0;
+    text-align: center;
+}
+#health-text {
+    top:-16px;
+    color:#fff;
+    z-index: 2;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+#health-remaining {
+    position:absolute;
+    left:0;
+    background: #009E03;
+    height: 35px;
+    width: 100%;
+    display: block;
+    z-index: 1;
+}
+#load-box {
+    display: none;
 }
 #maze {
     color:white;
     white-space: pre;
 }
 #boxes .window {
+    padding: 2%;
     display:none;
-    width:300px;
-    height:150px;
     background-color: rgba(255, 0, 0, 0.5);
     z-index:9999;
     position: absolute;
     text-align:center;
     top: 50%;
-    left: 50%;
+    left: 55%;
     transform: translate(-50%, -50%);
 }
 body {
@@ -46,17 +82,18 @@ body {
     -o-background-size: cover;
     background-size: cover;
 }
+.wrapper{
+    position:relative;
+}
 canvas {
-    /* border: 5px solid rgba(255,255,255,0.1);
-    box-shadow: 0pt 200px 200px rgba(105, 108, 109, 0.4); */
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 55%;
     transform: translate(-50%, -50%);
 }
 #fps {
     color:white;
 }
-#level{
+#level {
     z-index:1000;
 }

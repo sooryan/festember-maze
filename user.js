@@ -3,7 +3,7 @@ function consequences() {
     var obj = [];
     user.collide();
     for (i = 0; i < rectangles.length; i++) {
-        if (Math.abs(rectangles[i].points[0].x - user.x) < user.lightDist || Math.abs(rectangles[i].points[0].y - user.y) < user.lightDist) {
+        if (Math.abs(rectangles[i].points[0].x - user.x) < user.lightDist*1.5 || Math.abs(rectangles[i].points[0].y - user.y) < user.lightDist*1.5) {
             obj.push(rectangles[i]);
         }
     }
@@ -16,7 +16,7 @@ function consequences() {
     }
 
 
-    start(rectangles);
+    start(obj);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
     //$('canvas').last().remove();
@@ -24,14 +24,14 @@ function consequences() {
 
 
 function User() {
-    this.lives = 3;
+    this.lives = 8;
     this.x = gSize * 1.5;
     this.y = gSize / 2;
     this.xG = 1;
     this.yG = 0;
     this.life = 1;
     this.killMode = false;
-    this.killTime = 200;
+    this.killTime = Math.floor(Math.sqrt(a * b)) * gSize *((lvl+2)/(lvl+1)) ;
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';
@@ -44,7 +44,7 @@ function User() {
     };
 
     this.radius = gSize / 4;
-    this.speed = gSize / 4;
+    this.speed = gSize / 6;
 }
 User.prototype = {
     draw: function () {
@@ -85,7 +85,7 @@ User.prototype = {
 
         if (evt.keyCode == 32) {
             this.killMode = false;
-            this.speed = gSize / 4;
+            this.speed = gSize / 6;
             this.lightColor = '#F1DC96';
             this.color = 'white';
             this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
@@ -130,9 +130,11 @@ User.prototype = {
     },
     collide: function () {
         var collision = 0;
-        this.xG = Math.floor((this.x) / gSize);
+        this.xG = Math.floor((this.x+ this.radius) / gSize);
 
         this.yG = Math.floor((this.y) / gSize);
+        if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
+        this.yG = Math.floor((this.y + this.radius) / gSize);
         if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
 
         this.yG = Math.floor((this.y - this.radius) / gSize);

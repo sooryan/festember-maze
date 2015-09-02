@@ -12,18 +12,67 @@ function stuff(win) {
         $('#boxes').html(message)
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
 
-        window.sessionStorage.setItem("refresh", true);
+        window.sessionStorage.setItem("refresh", dyslexia("true"));
     }
     setTimeout(function () {
         $('#mask').show();
         $('.window').show();
     }, 10);
 }
-
+function reset(){
+    window.sessionStorage.clear();
+    window.location.reload();
+}
+function dyslexia(string){
+    if(string ==null)
+        return;
+    else{
+    return String.fromCharCode.apply(this,string.split('').map(function(a){
+        return a.charCodeAt()^255;
+    }))}
+}
 function fbShare(url, title, descr, image, winWidth, winHeight) {
     var winTop = (screen.height / 2) - (winHeight / 2);
     var winLeft = (screen.width / 2) - (winWidth / 2);
     window.open('http://www.facebook.com/sharer.php?s=100&p[title]=' + title + '&p[summary]=' + descr + '&p[url]=' + url + '&p[images][0]=' + image, 'sharer', 'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight);
+}
+var update_stats = function () {
+
+        // Updating stats
+        var sec = parseInt($('#seconds').html(),10);
+        sec +=parseInt($('#minutes').html()*60,10);
+        var maxTime = (lvl+1)*20;
+        score = ( maxTime-sec )*(lvl+1)*10;
+        var score1 = (lvl+1)*100;
+        score = score>score1?score:score1;
+        
+        $("#strength").html(score);
+        $("#health").html(user.lives);
+        $(".max-health").html(8);
+        update_healthbar();
+
+    };
+    var update_healthbar = function () {
+
+        var health_remaining = $("#health-remaining");
+        var health_bar = $("#health-bar");
+
+        var width = (user.lives / 8) * health_bar.width();
+
+        health_remaining.width(width)
+
+    };
+function writeLvl(){
+    var level = {
+                a: a,
+                b: b,
+                gSize: gSize,
+                level: lvl,
+                lives: user.lives,
+                score: sc + score
+            };
+
+            window.sessionStorage.setItem("level", dyslexia(JSON.stringify(level)));
 }
 $(document).keyup(function (e) {
     if (end == 1) {
@@ -35,26 +84,16 @@ $(document).keyup(function (e) {
             if (b == 5) gSize = 50;
             else gSize = 40;
             lvl++;
-
-            var level = {
-                a: a,
-                b: b,
-                gSize: gSize,
-                level: lvl,
-                lives: user.lives
-            };
-            window.sessionStorage.setItem("level", JSON.stringify(level));
+            writeLvl();
+            
             location.reload();
             user.lives
-            //gameStart(a,b,gSize);
             end = 0;
         }
     } else if (end == 2) {
         if (e.keyCode == 13 || e.keyCode == 27) {
             $('#mask').hide();
             $('.window').hide();
-            //window.sessionStorage.clear();
-            //if(user.lives<0)
                 location.reload();
 
             end = 0;
@@ -67,7 +106,7 @@ window.requestAnimFrame = (function () {
         window.setTimeout(callback, 1000 / 60);
     };
 })();
-var points, bleh, lvl, end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
+var score, sc , bleh, lvl, end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
 Array.prototype.sortOn = function (key) {
     this.sort(function (a, b) {
         if (a[key] < b[key]) {
@@ -89,7 +128,7 @@ var Lamp = illuminated.Lamp,
 var rectangles = [];
 
 
-function initialize(A, B, size, l) {
+function initialize(A, B, size, l,s) {
     var sec = 0;
 
     function pad(val) {
@@ -105,17 +144,25 @@ function initialize(A, B, size, l) {
 
     //Properties
     gSize = size || 50;
-    sSize = gSize*window.innerWidth/1366;    
+    if(window.innerWidth>900)
+    gSize = gSize*window.innerWidth/1366*0.9;    
     a = A || 5,
     b = B || 5;
+    sc = s|0;
     lvl = l || 0;
     blocks = [],
+    $("#gScore").html(sc);
     usableBlocks = createArray(2 * b + 1, 2 * a + 1);
     //var color = 'darkred';
     width = canvasMaze.width = (a * 2 + 1) * gSize;
     height = canvasMaze.height = (b * 2 + 1) * gSize;
+    $('#stats-container').height(height);
     /*--------------------------CANVAS2--------------------------*/
     canvas2 = document.getElementById('light');
+    ctx2 = canvas2.getContext('2d');
+    canvas2.width = width;
+    canvas2.height = height;
+    canvas2 = document.getElementById('notlight');
     ctx2 = canvas2.getContext('2d');
     canvas2.width = width;
     canvas2.height = height;
@@ -200,7 +247,27 @@ function drawHLines(line) {
     }), 1));
 }
 var bgcol;
+function exit(){
 
+    var canvas = document.getElementById('notlight');
+    var ctx = canvas.getContext('2d');
+    var light = new Lamp({
+        position: new Vec2((2*a-.5)*gSize,(2*b+1)*gSize),
+        color: user.lightColor,
+        radius: 0,
+        samples: 3,
+        distance: 60    });
+    var lighting = new Lighting({
+        light: light,
+        objects: rectangles
+    });
+
+    lighting.compute(canvas.width, canvas.height);
+    lighting.render(ctx);
+    ctx.fillStyle = bgcol;
+
+
+}
 function start(obj) {
     var canvas = canvasMaze;
     var ctx = ctxMaze;
@@ -231,9 +298,9 @@ function start(obj) {
 
 }
 
-function gameStart(rows, cols, size, l) {
-    window.sessionStorage.setItem("refresh", false);
-    initialize(rows, cols, size, l);
+function gameStart(rows, cols, size, l,s) {
+    window.sessionStorage.setItem("refresh", dyslexia("false"));
+    initialize(rows, cols, size, l,s);
     $('#level').html('<h1>level ' + lvl + '</h1>');
 
     var fpsa = document.getElementById('fps');
@@ -242,8 +309,7 @@ function gameStart(rows, cols, size, l) {
     var i, j;
     var mouse = {};
     user = new User();
-    if (level == null) user.lives = 3;
-    else
+    if(level != null)
     user.lives = level.lives;
 $('#lives').html(user.lives);
     window.addEventListener('keydown', function (e) {
@@ -410,10 +476,51 @@ $('#lives').html(user.lives);
         user.lightColor = 'black';
     }
     consequences();
-
-
+    function ekill(e){
+    
+        e.color = "rgba(0,0,0,0.4)";
+        e.ctx.clearRect(e.x - e.radius - 1, e.y - gSize, 2 * e.radius + 2, gSize * 1.5);
+        e.draw();
+        enemies.splice(enemies.indexOf(e), 1);
+        setTimeout(function () {
+            e.color = 'black';
+            enemies.push(e)
+        }, 2000*((lvl+3)/(lvl+1)));
+    }
+function scorer(){
+        
+    }
+    function ukill(e){
+        
+        ekill(e);
+        user.lives--;
+        writeLvl();
+        if (user.keys.left) {
+            user.x += user.speed;
+        } else if (user.keys.up) {
+            user.y += user.speed;
+        } else if (user.keys.right) {
+            user.x -= user.speed;
+        } else if (user.keys.down) {
+            user.y -= user.speed;
+        }
+        $('#lives').html(user.lives);
+            user.keys = {
+                up: false,
+                down: false,
+                right: false,
+                left: false
+            };
+            if(user.lives==0){
+                end = 2;
+                stuff(0);
+                window.sessionStorage.clear();
+            }
+    }
+    exit();
+    
     function drawLoop() {
-
+        update_stats();
         enemies.forEach(function (e) {
             e.move();
         });
@@ -426,55 +533,36 @@ $('#lives').html(user.lives);
             var dist = Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
             if (user.killMode == true) {
                 if (dist < user.lightDist) {
-                    e.color = "rgba(0,0,0,0.4)";
-                    e.ctx.clearRect(e.x - e.radius - 1, e.y - gSize, 2 * e.radius + 2, gSize * 1.5);
-                    e.draw();
-                    enemies.splice(enemies.indexOf(e), 1);
-                    setTimeout(function () {
-                        e.color = 'black';
-                        enemies.push(e)
-                    }, 2000);
+                    ekill(e);
                 }
+                else if (dist < 2 * user.radius) {
+                    ukill(e);
+                }
+
             } else {
                 if (dist < 2 * user.radius) {
-                    user.lives--;
-                    
-                    if (user.keys.left) {
-                    user.x += user.speed;
-                } else if (user.keys.up) {
-                    user.y += user.speed;
-                } else if (user.keys.right) {
-                    user.x -= user.speed;
-                } else if (user.keys.down) {
-                    user.y -= user.speed;
-                }
-                    
-                    user.keys = {
-                        up: false,
-                        down: false,
-                        right: false,
-                        left: false
-                    };
-                    if(user.lives<0)
-                    {
-                        end = 2;
-                        stuff(0);
-                    }
+                    ukill(e);
                 }
             }
 
         })
+
+        
         if (end != 2) requestAnimationFrame(drawLoop);
     }
     drawLoop();
 
 };
-
-var level = JSON.parse(window.sessionStorage.getItem("level"));
-
-var refresh = window.sessionStorage.getItem("refresh");
+if (window.sessionStorage.getItem("level"))
+var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
+else
+    var level=null;
+if (window.sessionStorage.getItem("refresh"))
+var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
+else
+var refresh=null;
 if (level == null) gameStart();
-else gameStart(level.a, level.b, level.gSize, level.level);
+else gameStart(level.a, level.b, level.gSize, level.level, level.score);
 
 if (refresh == 'true') {
     location.reload();
