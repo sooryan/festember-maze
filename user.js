@@ -19,7 +19,6 @@ function consequences() {
     start(obj);
     ctx2.clearRect(0, 0, width, height);
     user.draw();
-    //$('canvas').last().remove();
 }
 
 
@@ -31,7 +30,7 @@ function User() {
     this.yG = 0;
     this.life = 1;
     this.killMode = false;
-    this.killTime = Math.floor(Math.sqrt(a * b)) * gSize *((lvl+2)/(lvl+1)) ;
+    this.killTime = Math.floor(Math.sqrt(a * b)) * gSize *((lvl+1.5)/(lvl+1)) ;
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';

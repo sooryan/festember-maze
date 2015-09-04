@@ -2,77 +2,89 @@
 <html lang="en">
     
     <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# game: http://ogp.me/ns/game#">
-        <meta property="fb:app_id" content="302184056577324" />
-        <meta property="og:type" content="game.achievement" />
-        <meta property="og:url" content="Put your own URL to the object here" />
-        <meta property="og:title" content="I survived the labyrinth!" />
-        <meta property="og:image" content="https://s-static.ak.fbcdn.net/images/devsite/attachment_blank.png" />
-        <meta property="game:points" content="Sample Points" />
-        <title>Canvas Maze</title>
+        <meta property="fb:app_id" content="824044884379496" />
+        <meta property="og:type" content="game" />
+        <meta property="og:url" content="https://festember.com/~soorya/trial/game.html" />
+        <meta property="og:title" content="I was in the labyrinth" />
+        <meta property="og:description" content="It's pretty cool in here. Check it out!
+                                                Into the labyrinth @ Festember Games" />
+        <meta property="og:image" content="https://festember.com/~soorya/trial/game.jpg" />
+        <meta property="og:site_name" content="Into the Labyrinth @ Festember Games" />
+        <title>Into the Labyrinth</title>
         <script src="jquery.min.js"></script>
         <script src="maze3.js"></script>
-        
         <link rel="stylesheet" href="game.css">
     </head>
     
     <body>
-    <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '824044884379496',
-      xfbml      : true,
-      version    : 'v2.4'
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
+        <div id="fb-root"></div>
+        <script>
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.4&appId=824044884379496";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
         <div id="content-container">
             <div id="stats-container">
-                <div id="level-s" class="stat">
-                     <h2><span id="level"></span></h2>
+                <ul>
+                    <li>
+                        <div id="level-s" class="stat"> <span id="level"></span>
 
-                </div>
-                <div id="health-bar">
-                     <h2 id="health-text"><span id="health"></span>/<span class="max-health"></span>
+                        </div>
+                    </li>
+                    <li>
+                        <div id="health-bar">
+                             <h2 id="health-text"><span id="health"></span>/<span class="max-health"></span>
 
                     </h2><span id="health-remaining"></span>
 
-                </div>
-                <ul>
-                    <li id='minutes'></li>
-                    <li>:</li>
-                    <li id='seconds'></li>
+                        </div>
+                    </li>
+                    <li>
+                        <ul>
+                            <li id='minutes'></li>
+                            <li>:</li>
+                            <li id='seconds'></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="stat">
+                             <h3>Lvl Score: <span id="strength"></span>
+
+                </h3>
+
+                        </div>
+                    </li>
+                    <li>
+                        <div class="stat">
+                             <h3>Game Score: <span id="gScore"></span>
+                </h3>
+
+                        </div>
+                    </li>
+                    <li>
+                        <h2><a href='' onclick="reset();" class="stat restart--button">Restart</a></h2>
+                    </li>
                 </ul>
-                <div class="stat">
-                     <h3>Lvl Score: <span id="strength"></span>
-
-                </h3>
-
-                </div>
-                <div class="stat">
-                     <h3>Game Score: <span id="gScore"></span>
-
-                </h3>
-
-                </div>
-                 <h2><a href='' onclick="reset();" class="stat">Restart</a></h2>
-
             </div>
         </div>
-        </div>
         <div id="fps" style="display:none"></div>
-        </div>
-        <div id="boxes">
+        <div id="success" style="display:none">
             <div id="dialog" class="window">
-                 <h1><b>Level Cleared!</b></h1>Enter or Esc to start next level!</div>
-            <div id="mask"></div>
+                <h1><b>Level Cleared!<b></h1>Esc to restart
+                <div id="mask"></div>
+            </div>
+        </div>
+        <div id="failure" style="display:none">
+            <div id="dialog" class="window">
+                <h1><b>You shall not pass</b></h1>Esc to restart<br>
+                <div class="fb-like" data-href="https://festember.com/~soorya/trial/game.html" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+                <div id="mask"></div>
+            </div>
         </div>
         <div>
             <canvas id="canvasMaze"></canvas>
@@ -80,18 +92,10 @@
             <canvas id="notlight"></canvas>
             <canvas id="light"></canvas>
         </div>
-        <a href="http://www.festember.com" target="_blank">
-  Share on Facebook
-</a>
-        <fb:share-button type="box_count"></fb:share-button>
-        <div id="level"></div>
         <script src='illuminated/illuminated.js'></script>
         <script src='user.js'></script>
         <script src='enemy.js'></script>
-        <script src='illuminated/illuminated.js'></script>
         <script src="mazeRender.js"></script>
-        <div id="fb-root"></div>
-
     </body>
 
 </html>

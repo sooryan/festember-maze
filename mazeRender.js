@@ -1,28 +1,19 @@
 function stuff(win) {
+    $('#boxes').show();
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
     if (win == 1) {
-        $('#boxes .window').css("background-color", "rgba(0,255,0,0.5)");
+        $('#success .window').css("background-color", "rgba(0,255,0,0.5)");
+        $('#success').show();
     }
     if (win == 0) {
-        var href = "javascript:fbShare('http://google.com', 'Fb Share', 'Popup', 'http://goo.gl/dS52U', 520, 350)";
-        console.log(href);
-        var message = '<div id="dialog" class="window"><h1><b>You shall not pass</b></h1>Enter or Esc to restart<br><a href="' + href + '">Share</a></div><div id="mask"></div>';
-        console.log(message);
-        $('#boxes').html(message)
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
-
+        $('#failure').show();
         window.sessionStorage.setItem("refresh", dyslexia("true"));
     }
-    setTimeout(function () {
-        $('#mask').show();
-        $('.window').show();
-    }, 10);
+    
 }
-function reset(){
-    window.sessionStorage.clear();
-    window.location.reload();
-}
+
 function dyslexia(string){
     if(string ==null)
         return;
@@ -30,11 +21,6 @@ function dyslexia(string){
     return String.fromCharCode.apply(this,string.split('').map(function(a){
         return a.charCodeAt()^255;
     }))}
-}
-function fbShare(url, title, descr, image, winWidth, winHeight) {
-    var winTop = (screen.height / 2) - (winHeight / 2);
-    var winLeft = (screen.width / 2) - (winWidth / 2);
-    window.open('http://www.facebook.com/sharer.php?s=100&p[title]=' + title + '&p[summary]=' + descr + '&p[url]=' + url + '&p[images][0]=' + image, 'sharer', 'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight);
 }
 var update_stats = function () {
 
@@ -301,7 +287,7 @@ function start(obj) {
 function gameStart(rows, cols, size, l,s) {
     window.sessionStorage.setItem("refresh", dyslexia("false"));
     initialize(rows, cols, size, l,s);
-    $('#level').html('<h1>level ' + lvl + '</h1>');
+    $('#level').html('<h2>Level ' + lvl + '</h2>');
 
     var fpsa = document.getElementById('fps');
     var updateCanvas = true;
@@ -469,7 +455,8 @@ $('#lives').html(user.lives);
         });
 
     }
-    initEnemies();
+     initEnemies();
+    //enemies.push(new Enemy(verfree[1]));
     bgcol = enemies[0].color || black;
     if (bgcol == 'white' || bgcol == '#000') {
         user.color = '#F1DC96';
@@ -566,4 +553,8 @@ else gameStart(level.a, level.b, level.gSize, level.level, level.score);
 
 if (refresh == 'true') {
     location.reload();
+}
+function reset(){
+    window.sessionStorage.clear();
+    window.location.reload();
 }
