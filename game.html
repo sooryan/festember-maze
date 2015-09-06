@@ -4,11 +4,11 @@
     <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# game: http://ogp.me/ns/game#">
         <meta property="fb:app_id" content="824044884379496" />
         <meta property="og:type" content="game" />
-        <meta property="og:url" content="https://festember.com/~soorya/trial/game.html" />
+        <meta property="og:url" content="https://festember.com/~soorya/" />
         <meta property="og:title" content="I was in the labyrinth" />
         <meta property="og:description" content="It's pretty cool in here. Check it out!
                                                 Into the labyrinth @ Festember Games" />
-        <meta property="og:image" content="https://festember.com/~soorya/trial/game.jpg" />
+        <meta property="og:image" content="https://festember.com/~soorya/game.jpg" />
         <meta property="og:site_name" content="Into the Labyrinth @ Festember Games" />
         <title>Into the Labyrinth</title>
         <script src="jquery.min.js"></script>
@@ -17,6 +17,23 @@
     </head>
     
     <body>
+        <div id="splashscreen">
+             <h1>All set to explore the Labyrinth?</h1>
+            <br>
+             <h3>Your objective is to get to the exit.<br>
+     Watch out for the enemies.<br> If you get lucky, you could find some extra lives too!</h3>
+
+            <br>
+            <br> <b>Here are a few instructions first</b>
+            <br>
+            <ol>
+                <li>Arrows keys to move</li>
+                <li>Space bar to stun enemies</li>
+            </ol>PS:Stunning takes a little bit of time to reload.
+            <br>
+             <h1><b><a href="#" class="enter_link">Enter the labyrinth!</a></b></h1>
+
+        </div>
         <div id="fb-root"></div>
         <script>
             (function(d, s, id) {
@@ -67,7 +84,8 @@
                         </div>
                     </li>
                     <li>
-                        <h2><a href='' onclick="reset();" class="stat restart--button">Restart</a></h2>
+                         <h2><a href='' onclick="reset();" class="stat restart--button">Restart</a></h2>
+
                     </li>
                 </ul>
             </div>
@@ -75,14 +93,15 @@
         <div id="fps" style="display:none"></div>
         <div id="success" style="display:none">
             <div id="dialog" class="window">
-                <h1><b>Level Cleared!<b></h1>Esc to restart
+                 <h1><b>Level Cleared!<b></h1>Esc to move to next level
                 <div id="mask"></div>
             </div>
         </div>
         <div id="failure" style="display:none">
             <div id="dialog" class="window">
-                <h1><b>You shall not pass</b></h1>Esc to restart<br>
-                <div class="fb-like" data-href="https://festember.com/~soorya/trial/game.html" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+                 <h1><b>You shall not pass</b></h1>Esc to restart
+                <br>
+                <div class="fb-like" data-href="https://festember.com/~soorya" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
                 <div id="mask"></div>
             </div>
         </div>

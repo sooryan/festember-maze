@@ -1,5 +1,21 @@
 @import url(https://fonts.googleapis.com/css?family=Alegreya+Sans+SC);
-
+#splashscreen {
+    z-index: 1000;
+    position:absolute;
+    text-align:center;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background-color:rgba(0,0,0,0.8);
+    display:none;
+}
+#scontent{
+position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+}
 ul {
     top:0;
     padding:5px;
@@ -19,6 +35,11 @@ ul li {
     float:left;
     margin:0;
     padding:5px;
+}
+img{
+    width:20%;
+    float:left;
+    padding:2%;
 }
 .stat {
     clear:both;

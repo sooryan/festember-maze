@@ -6,7 +6,7 @@ function Enemy(line) {
     this.xG = line.x;
     this.yG = line.y1;
     this.color = 'black';
-    this.speedMag = 2;//(level<2)?2:Math.floor(Math.random() * 4) + 1;
+    this.speedMag = 1;//(level<2)?2:Math.floor(Math.random() * 4) + 1;
     this.radius = gSize / 4;
     this.speed={
         y : this.speedMag,
@@ -20,7 +20,6 @@ function Enemy(line) {
     };
     this.canvas = document.getElementById('light');
     this.ctx = this.canvas.getContext('2d');
-    console.log(usableBlocks)
 }
 Enemy.prototype = {
     clearCircle : function(x, y, radius,context)
@@ -44,14 +43,14 @@ Enemy.prototype = {
         this.y += this.speed.y;
         this.x += this.speed.x;
         this.collide();
-        this.clearCircle(this.x,this.y,this.radius,this.ctx)
+        //this.clearCircle(this.x,this.y,this.radius,this.ctx)
         //this.ctx.clearRect(0,0,width,height);
         //.ctx.arc(this.x, y, radius, 0, Math.PI*2, true);
         //this.ctx.clip();
-        //this.ctx.clearRect(this.x - this.radius-3, this.y - this.radius-3, 2*this.radius+6, 2*this.radius+6);
+        this.ctx.clearRect(this.x - this.radius-3, this.y - this.radius-3, 2*this.radius+6, 2*this.radius+6);
         this.draw();
     },
-    dirchange: function (dir) {
+    dirchange: function () {
         if(this.dir.up){
             this.y += 2*this.speedMag;
             this.dir.up = false;
@@ -70,7 +69,46 @@ Enemy.prototype = {
         }
         
     },
+    dirchange2: function () {
+        if(this.dir.up){
+            this.y += 2*this.speedMag;
+            this.dir.up = false;
+            this.dir.down = true;
+        }
+        else if(this.dir.down){
+            this.y -= this.speedMag;
+            this.dir.down = false;
+            this.dir.up = true;
+        }
+        else if(this.dir.right){
+            this.x -= this.speedMag;
+            this.dir.right = false;
+            this.dir.left = true;
+        }
+        else if(this.dir.left){
+            this.x += 2*this.speedMag;
+            this.dir.left = false;
+            this.dir.right = true;
+        }
+        
+    },
     collide: function () {
+        for(var i=0;i<enemies.length;i++){
+            e = enemies[i];
+            if (e!=this)
+            {   
+                var dist = Math.sqrt(Math.pow(e.x - this.x, 2) + Math.pow(e.y - this.y, 2));
+                if(dist<(e.radius + this.radius))
+                {
+                    e.dirchange2();
+                    this.dirchange2();
+                    e.speed.x = -e.speed.x;
+                    e.speed.y = -e.speed.y;
+                    this.speed.y = -this.speed.y;
+                    this.speed.x = -this.speed.x;
+                }
+            }
+        };
         var collision = 0;
         this.xG = Math.floor((this.x+ this.radius) / gSize);
 
@@ -89,22 +127,29 @@ Enemy.prototype = {
 
         this.yG = Math.floor((this.y + this.radius) / gSize);
         if (blocks.indexOf(this.xG + '-' + this.yG) != -1) collision = 1;
-
+        if (this.y < gSize * 0.5) {
+            this.speed.y = -this.speed.y;
+            this.dirchange2()}
+        else if (this.y > (2*b+1)*gSize) {
+            this.speed.y = -this.speed.y;
+            this.dirchange2()}
         if (collision){
             var free = new Array();
             var i = Math.floor(this.x / gSize);
             var j = Math.floor(this.y / gSize);
+            if(j<2*b+1)
             if(usableBlocks[j+1][i]==0)
                 free.push('down');
-            if(i>0)
+            if(j>0)
             if(usableBlocks[j-1][i]==0)
                 free.push('up');
+            if(i>0)
             if(usableBlocks[j][i-1]==0)
                 free.push('left');
+            if(j<2*a+1)
             if(usableBlocks[j][i+1]==0)
                 free.push('right');
             var dir = free[Math.floor(Math.random()*free.length)];
-            console.log(i,j,free,dir);
             switch(dir){
                 case 'right':
                     this.dirchange();
@@ -141,5 +186,6 @@ Enemy.prototype = {
                 
             }
         }
+               
     }
 };

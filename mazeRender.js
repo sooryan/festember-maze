@@ -1,4 +1,16 @@
+$('.enter_link').click(function() {
+        $("#splashscreen").fadeOut(500);
+        $("#content-container").show();
+        sec = 0;
+        flag=1;
+        $('#minutes').show();
+        $('#seconds').show();
+        $('#strength').show();
+        
+ });
+var flag=0,sec;
 function stuff(win) {
+    clearInterval(time);
     $('#boxes').show();
     $('#mask').fadeIn(1000);
     $('#mask').fadeTo("slow", 0.8);
@@ -111,16 +123,15 @@ var Lamp = illuminated.Lamp,
     Vec2 = illuminated.Vec2,
     Lighting = illuminated.Lighting,
     DarkMask = illuminated.DarkMask;
-var rectangles = [];
+var rectangles = [],time;
 
 
 function initialize(A, B, size, l,s) {
-    var sec = 0;
-
+    sec = 0;
     function pad(val) {
         return val > 9 ? val : "0" + val;
     }
-    setInterval(function () {
+    time  = setInterval(function () {
         $("#seconds").html(pad(++sec % 60));
         $("#minutes").html(pad(parseInt(sec / 60, 10)));
     }, 1000);
@@ -132,7 +143,7 @@ function initialize(A, B, size, l,s) {
     gSize = size || 50;
     if(window.innerWidth>900)
     gSize = gSize*window.innerWidth/1366*0.9;    
-    a = A || 5,
+    a = A || 6,
     b = B || 5;
     sc = s|0;
     lvl = l || 0;
@@ -505,16 +516,16 @@ function scorer(){
             }
     }
     exit();
-    
     function drawLoop() {
         update_stats();
+        if(flag!=0)
         enemies.forEach(function (e) {
             e.move();
         });
         fpsa.innerHTML = fps.getFPS()
         user.move();
         if (user.killTime < 200) {
-            user.killTime += 0.1;
+            user.killTime += 1;
         }
         enemies.forEach(function (e) {
             var dist = Math.sqrt(Math.pow(e.x - user.x, 2) + Math.pow(e.y - user.y, 2));
@@ -533,8 +544,6 @@ function scorer(){
             }
 
         })
-
-        
         if (end != 2) requestAnimationFrame(drawLoop);
     }
     drawLoop();
@@ -548,8 +557,11 @@ if (window.sessionStorage.getItem("refresh"))
 var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
 else
 var refresh=null;
-if (level == null) gameStart();
-else gameStart(level.a, level.b, level.gSize, level.level, level.score);
+if (level == null) {$('#minutes').hide();$('#strength').hide();$('#seconds').hide();gameStart();$("#splashscreen").show();}
+else {
+    flag=1;
+    gameStart(level.a, level.b, level.gSize, level.level, level.score);
+}
 
 if (refresh == 'true') {
     location.reload();

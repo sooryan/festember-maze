@@ -34,7 +34,7 @@ function User() {
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';
-    this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
+    this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2;
     this.keys = {
         up: false,
         down: false,
