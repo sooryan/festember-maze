@@ -137,18 +137,30 @@ Enemy.prototype = {
             var free = new Array();
             var i = Math.floor(this.x / gSize);
             var j = Math.floor(this.y / gSize);
+            try{
             if(j<2*b+1)
             if(usableBlocks[j+1][i]==0)
                 free.push('down');
+            }
+            catch(err){}
+            try{
             if(j>0)
             if(usableBlocks[j-1][i]==0)
                 free.push('up');
+            }
+            catch(err){}
+            try{
             if(i>0)
             if(usableBlocks[j][i-1]==0)
                 free.push('left');
+            }
+            catch(err){}
+            try{
             if(j<2*a+1)
             if(usableBlocks[j][i+1]==0)
                 free.push('right');
+            }
+            catch(err){}
             var dir = free[Math.floor(Math.random()*free.length)];
             switch(dir){
                 case 'right':
