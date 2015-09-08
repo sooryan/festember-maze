@@ -54,6 +54,7 @@ User.prototype = {
     },
 
     keydown: function (evt) {
+        console.log(111);
         updateCanvas = true;
         if (evt.keyCode == 32) {
             this.killMode = true;
@@ -81,7 +82,7 @@ User.prototype = {
     },
 
     keyup: function (evt) {
-
+        console.log(111);
         if (evt.keyCode == 32) {
             this.killMode = false;
             this.speed = gSize / 6;

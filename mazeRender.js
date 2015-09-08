@@ -1,3 +1,36 @@
+function randomstring(L){
+    var s= '';
+    var randomchar=function(){
+        var n= Math.floor(Math.random()*62);
+        if(n<10) return n; //1-10
+        if(n<36) return String.fromCharCode(n+55); //A-Z
+        return String.fromCharCode(n+61); //a-z
+    }
+    while(s.length< L) s+= randomchar();
+    return s;
+}
+window.begin = function (){
+if (window.sessionStorage.getItem("level"))
+{
+    var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
+}
+else
+    var level=null;
+if (window.sessionStorage.getItem("refresh"))
+var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
+else
+var refresh=null;
+if (level == null) {$('#minutes').hide();$('#strength').hide();$('#seconds').hide();gameStart();$("#splashscreen").show();}
+else {
+    flag=1;
+    gameStart(level.a, level.b, level.gSize, level.level, level.score, level.lives);
+}
+
+if (refresh == 'true') {
+clean();
+    begin();
+}
+}
 $('.enter_link').click(function() {
         $("#splashscreen").fadeOut(500);
         $("#content-container").show();
@@ -21,11 +54,55 @@ function stuff(win) {
     if (win == 0) {
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
         $('#failure').show();
+        window.removeEventListener('keydown', DOWN, true);
+    window.removeEventListener('keyup', UP, true);
         window.sessionStorage.setItem("refresh", dyslexia("true"));
     }
     
 }
+var animation;
 
+function UP(event){
+    user.keyup(event);
+}
+function DOWN(event){
+    user.keydown(event);
+}
+
+
+function clean () {
+    cancelAnimationFrame(animation);
+    var a = $('#sheet');
+    a.empty();
+
+ /*   var parent = document.getElementById('sheet');
+    var child = document.getElementById('light');
+    parent.removeChild(child);
+    child = document.getElementById('canvasMaze');
+    parent.removeChild(child);
+    child = document.getElementById('notlight');
+    parent.removeChild(child);
+    child = document.getElementById('canvasMotion');
+    parent.removeChild(child);
+    console.log(user);
+    console.log(enemies[0]);*/
+    rectangles.splice(0,rectangles.length);
+    delete user;
+    user = null;
+    enemies.splice(0,enemies.length);
+    var a = $('canvas');
+    a.remove();
+    console.log(enemies.length)
+    /*for(i=0;i<a.length;i++)
+    {
+        var ctx = a[i].getContext("2d");
+        ctx.clearRect(0,0,a[i].width,a[i].height);
+        /*a[i].remove();
+        if(a[i].parent().length!=0){
+        a[i]=NULL;
+    }
+    }*/
+}
 function dyslexia(string){
     if(string ==null)
         return;
@@ -75,26 +152,26 @@ function writeLvl(){
 $(document).keyup(function (e) {
     if (end == 1) {
         if (e.keyCode == 13 || e.keyCode == 27) {
-            $('#mask').hide();
-            $('.window').hide();
+            $('#success').hide();
+            $('#failure').hide();
             if (b < 7) b++;
             if (a < 15) a++;
             if (b == 5) gSize = 50;
             else gSize = 40;
             lvl++;
             writeLvl();
-            
-            location.reload();
-            user.lives
+            clean();
             end = 0;
+            begin();
         }
     } else if (end == 2) {
         if (e.keyCode == 13 || e.keyCode == 27) {
-            $('#mask').hide();
-            $('.window').hide();
-                location.reload();
+            $('#success').hide();
+            $('#failure').hide();
+clean();
 
             end = 0;
+            begin();
         }
     }
 });
@@ -135,7 +212,16 @@ function initialize(A, B, size, l,s) {
         $("#seconds").html(pad(++sec % 60));
         $("#minutes").html(pad(parseInt(sec / 60, 10)));
     }, 1000);
-
+    var c = $("<div>", {id: "sheet"});
+    $("body").append(c);
+    var c = $("<canvas>", {id: "canvasMaze"});
+    $("#sheet").append(c);
+    c = $("<canvas>", {id: "canvasMotion"});
+    $("#sheet").append(c);
+    c = $("<canvas>", {id: "notlight"});
+    $("#sheet").append(c);
+    c = $("<canvas>", {id: "light"});
+    $("#sheet").append(c);
     canvasMaze = document.getElementById('canvasMaze');
     ctxMaze = canvasMaze.getContext('2d');
 
@@ -295,7 +381,8 @@ function start(obj) {
 
 }
 
-function gameStart(rows, cols, size, l,s) {
+function gameStart(rows, cols, size, l, s, life) {
+
     window.sessionStorage.setItem("refresh", dyslexia("false"));
     initialize(rows, cols, size, l,s);
     $('#level').html('<h2>Level ' + lvl + '</h2>');
@@ -306,16 +393,12 @@ function gameStart(rows, cols, size, l,s) {
     var i, j;
     var mouse = {};
     user = new User();
-    if(level != null)
-    user.lives = level.lives;
+    user.speed = gSize / 6;
+    console.log(user);
+    user.lives = life||8;
 $('#lives').html(user.lives);
-    window.addEventListener('keydown', function (e) {
-        user.keydown(e);
-    }, false);
-    window.addEventListener('keyup', function (e) {
-        user.keyup(e);
-
-    }, false);
+    window.addEventListener('keydown', DOWN, true);
+    window.addEventListener('keyup', UP, true);
 
 
     for (i = 0; i < 2 * b + 1; i++)
@@ -511,6 +594,7 @@ function scorer(){
             };
             if(user.lives==0){
                 end = 2;
+                cancelAnimationFrame(animation);
                 stuff(0);
                 window.sessionStorage.clear();
             }
@@ -544,29 +628,17 @@ function scorer(){
             }
 
         })
-        if (end != 2) requestAnimationFrame(drawLoop);
+        console.log(enemies.length)
+;       animation = requestAnimFrame(drawLoop);
+
     }
     drawLoop();
 
 };
-if (window.sessionStorage.getItem("level"))
-var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
-else
-    var level=null;
-if (window.sessionStorage.getItem("refresh"))
-var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
-else
-var refresh=null;
-if (level == null) {$('#minutes').hide();$('#strength').hide();$('#seconds').hide();gameStart();$("#splashscreen").show();}
-else {
-    flag=1;
-    gameStart(level.a, level.b, level.gSize, level.level, level.score);
-}
 
-if (refresh == 'true') {
-    location.reload();
-}
 function reset(){
     window.sessionStorage.clear();
-    window.location.reload();
+    clean();
+    begin();
 }
+begin();
