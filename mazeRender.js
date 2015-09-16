@@ -1,5 +1,5 @@
-var enemyRespawn;
-
+window.enemyRespawn = 123;
+var myAudio = new Audio('./sounds/bg.mp3');
 function randomstring(L) {
     var s = '';
     var randomchar = function () {
@@ -12,6 +12,7 @@ function randomstring(L) {
     return s;
 }
 window.begin = function () {
+    ga('send', 'pageview');
     if (window.sessionStorage.getItem("level")) {
 
         var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
@@ -35,6 +36,12 @@ window.begin = function () {
         clean();
         begin();
     }
+     
+myAudio.addEventListener('ended', function() {
+    this.currentTime = 0;
+    this.play();
+}, false);
+myAudio.play();
     //$('body').append('<iframe style = "display:none" width="0" height="0" src="https://www.youtube.com/embed/2OD13fA9Qu0?autoplay=1&loop=1" ></iframe>')
 }
 $('.enter_link').click(function () {
@@ -65,15 +72,18 @@ function stuff(win) {
     }
     if (win == 0) {
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
-        $('body').css("background-color", "black");
+        $("#end").show();
         $('#failure').show();
+        flag = 0;
+        myAudio.pause();
+        //cancelAnimationFrame(animation);
         window.removeEventListener('keydown', DOWN, true);
         window.removeEventListener('keyup', UP, true);
         window.sessionStorage.setItem("refresh", dyslexia("true"));
     }
 
 }
-var animation;
+window.animation;
 
 function UP(event) {
     user.keyup(event);
@@ -651,7 +661,7 @@ function reset() {
     clearInterval(time);
 }
 
-function clean() {
+window.clean = function() {
     clearTimeout(enemyRespawn);
     cancelAnimationFrame(animation);
     var a = $('#sheet');
