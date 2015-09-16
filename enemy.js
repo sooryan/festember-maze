@@ -22,17 +22,6 @@ function Enemy(line) {
     this.ctx = this.canvas.getContext('2d');
 }
 Enemy.prototype = {
-    clearCircle : function(x, y, radius,context)
-{
-    context.save();
-    context.beginPath();
-    radius +=3;
-    context.arc(x, y, radius, 0, 2*Math.PI, true);
-    context.clip();
-    context.clearRect(x-radius,y-radius,radius*2,radius*2);
-    context.restore();
-},
-
     draw: function () {
         this.ctx.fillStyle = this.color;
         this.ctx.beginPath();
@@ -43,10 +32,6 @@ Enemy.prototype = {
         this.y += this.speed.y;
         this.x += this.speed.x;
         this.collide();
-        //this.clearCircle(this.x,this.y,this.radius,this.ctx)
-        //this.ctx.clearRect(0,0,width,height);
-        //.ctx.arc(this.x, y, radius, 0, Math.PI*2, true);
-        //this.ctx.clip();
         this.ctx.clearRect(this.x - this.radius-3, this.y - this.radius-3, 2*this.radius+6, 2*this.radius+6);
         this.draw();
     },

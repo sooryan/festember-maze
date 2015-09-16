@@ -23,6 +23,7 @@ function consequences() {
 
 
 function User() {
+    this.attack = new Audio('./sounds/attack.mp3');
     this.lives = 8;
     this.x = gSize * 1.5;
     this.y = gSize / 2;
@@ -34,7 +35,7 @@ function User() {
     this.coolOff = false;
     this.color = 'white';
     this.lightColor = '#F1DC96';
-    this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2;
+    this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
     this.keys = {
         up: false,
         down: false,
@@ -43,7 +44,10 @@ function User() {
     };
 
     this.radius = gSize / 4;
-    this.speed = gSize / 6;
+    if(lvl<3)
+        this.speed = gSize / 9;
+    else
+        this.speed = gSize / 7;
 }
 User.prototype = {
     draw: function () {
@@ -54,7 +58,6 @@ User.prototype = {
     },
 
     keydown: function (evt) {
-        console.log(111);
         updateCanvas = true;
         if (evt.keyCode == 32) {
             this.killMode = true;
@@ -62,7 +65,7 @@ User.prototype = {
             this.color = 'rgba(255,255,255,0.7)';
             this.lightDist = 50 * this.killTime * 0.01;
             consequences();
-
+            this.attack.play();
         }
         switch (evt.keyCode) {
             case 37:
@@ -82,10 +85,12 @@ User.prototype = {
     },
 
     keyup: function (evt) {
-        console.log(111);
         if (evt.keyCode == 32) {
             this.killMode = false;
-            this.speed = gSize / 6;
+            if(lvl<3)
+        this.speed = gSize / 9;
+    else
+        this.speed = gSize / 7;
             this.lightColor = '#F1DC96';
             this.color = 'white';
             this.lightDist = Math.floor(Math.sqrt(a * b)) * gSize / 2.5;
@@ -111,16 +116,17 @@ User.prototype = {
         if (this.keys.left) {
             this.x -= this.speed;
             consequences();
-        } else if (this.keys.up) {
+        }else  if (this.keys.up) {
             this.y -= this.speed;
             consequences();
-        } else if (this.keys.right) {
+        }else  if (this.keys.right) {
             this.x += this.speed;
             consequences();
-        } else if (this.keys.down) {
+        }else  if (this.keys.down) {
             this.y += this.speed;
             consequences();
         }
+
         if (this.y < gSize * 0.5) this.y = gSize * 0.5;
         else if (this.y >= height - this.radius) {
             end = 1;

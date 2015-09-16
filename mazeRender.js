@@ -1,47 +1,59 @@
-function randomstring(L){
-    var s= '';
-    var randomchar=function(){
-        var n= Math.floor(Math.random()*62);
-        if(n<10) return n; //1-10
-        if(n<36) return String.fromCharCode(n+55); //A-Z
-        return String.fromCharCode(n+61); //a-z
+var enemyRespawn;
+
+function randomstring(L) {
+    var s = '';
+    var randomchar = function () {
+        var n = Math.floor(Math.random() * 62);
+        if (n < 10) return n; //1-10
+        if (n < 36) return String.fromCharCode(n + 55); //A-Z
+        return String.fromCharCode(n + 61); //a-z
     }
-    while(s.length< L) s+= randomchar();
+    while (s.length < L) s += randomchar();
     return s;
 }
-window.begin = function (){
-if (window.sessionStorage.getItem("level"))
-{
-    var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
-}
-else
-    var level=null;
-if (window.sessionStorage.getItem("refresh"))
-var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
-else
-var refresh=null;
-if (level == null) {$('#minutes').hide();$('#strength').hide();$('#seconds').hide();gameStart();$("#splashscreen").show();}
-else {
-    flag=1;
-    gameStart(level.a, level.b, level.gSize, level.level, level.score, level.lives);
-}
+window.begin = function () {
+    if (window.sessionStorage.getItem("level")) {
 
-if (refresh == 'true') {
-clean();
-    begin();
+        var level = JSON.parse(dyslexia(window.sessionStorage.getItem("level")));
+    } else var level = null;
+    if (window.sessionStorage.getItem("refresh")) var refresh = dyslexia(window.sessionStorage.getItem("refresh"));
+    else var refresh = null;
+    if (level == null) {
+        flag = 0;
+        $('#minutes').hide();
+        $('#strength').hide();
+        $('#seconds').hide();
+        gameStart();
+        $("#splashscreen").show();
+        //$('#social-sidebar a span').css("opacity",1).css("left",100);
+    } else {
+        flag = 1;
+        gameStart(level.a, level.b, level.gSize, level.level, level.score, level.lives);
+    }
+
+    if (refresh == 'true') {
+        clean();
+        begin();
+    }
+    //$('body').append('<iframe style = "display:none" width="0" height="0" src="https://www.youtube.com/embed/2OD13fA9Qu0?autoplay=1&loop=1" ></iframe>')
 }
-}
-$('.enter_link').click(function() {
-        $("#splashscreen").fadeOut(500);
-        $("#content-container").show();
-        sec = 0;
-        flag=1;
-        $('#minutes').show();
-        $('#seconds').show();
-        $('#strength').show();
-        
- });
-var flag=0,sec;
+$('.enter_link').click(function () {
+    //$('#social-sidebar a span').css("opacity",0).css("left","-100%");
+
+    $("#splashscreen").fadeOut(500);
+    window.addEventListener('keydown', DOWN, true);
+    window.addEventListener('keyup', UP, true);
+    $("#content-container").show();
+    sec = 0;
+    flag = 1;
+    $('#minutes').show();
+    $('#seconds').show();
+    $('#strength').show();
+
+});
+var flag = 0,
+    sec;
+
 function stuff(win) {
     clearInterval(time);
     $('#boxes').show();
@@ -53,101 +65,72 @@ function stuff(win) {
     }
     if (win == 0) {
         $('#boxes .window').css("background-color", "rgba(255,0,0,0.5)");
+        $('body').css("background-color", "black");
         $('#failure').show();
         window.removeEventListener('keydown', DOWN, true);
-    window.removeEventListener('keyup', UP, true);
+        window.removeEventListener('keyup', UP, true);
         window.sessionStorage.setItem("refresh", dyslexia("true"));
     }
-    
+
 }
 var animation;
 
-function UP(event){
+function UP(event) {
     user.keyup(event);
 }
-function DOWN(event){
+
+function DOWN(event) {
     user.keydown(event);
 }
 
 
-function clean () {
-    cancelAnimationFrame(animation);
-    var a = $('#sheet');
-    a.empty();
 
- /*   var parent = document.getElementById('sheet');
-    var child = document.getElementById('light');
-    parent.removeChild(child);
-    child = document.getElementById('canvasMaze');
-    parent.removeChild(child);
-    child = document.getElementById('notlight');
-    parent.removeChild(child);
-    child = document.getElementById('canvasMotion');
-    parent.removeChild(child);
-    console.log(user);
-    console.log(enemies[0]);*/
-    rectangles.splice(0,rectangles.length);
-    delete user;
-    user = null;
-    enemies.splice(0,enemies.length);
-    var a = $('canvas');
-    a.remove();
-    console.log(enemies.length)
-    /*for(i=0;i<a.length;i++)
-    {
-        var ctx = a[i].getContext("2d");
-        ctx.clearRect(0,0,a[i].width,a[i].height);
-        /*a[i].remove();
-        if(a[i].parent().length!=0){
-        a[i]=NULL;
+function dyslexia(string) {
+    if (string == null) return;
+    else {
+        return String.fromCharCode.apply(this, string.split('').map(function (a) {
+            return a.charCodeAt() ^ 255;
+        }))
     }
-    }*/
-}
-function dyslexia(string){
-    if(string ==null)
-        return;
-    else{
-    return String.fromCharCode.apply(this,string.split('').map(function(a){
-        return a.charCodeAt()^255;
-    }))}
 }
 var update_stats = function () {
 
-        // Updating stats
-        var sec = parseInt($('#seconds').html(),10);
-        sec +=parseInt($('#minutes').html()*60,10);
-        var maxTime = (lvl+1)*20;
-        score = ( maxTime-sec )*(lvl+1)*10;
-        var score1 = (lvl+1)*100;
-        score = score>score1?score:score1;
-        
-        $("#strength").html(score);
-        $("#health").html(user.lives);
-        $(".max-health").html(8);
-        update_healthbar();
+    // Updating stats
+    var sec = parseInt($('#seconds').html(), 10);
+    sec += parseInt($('#minutes').html() * 60, 10);
+    var maxTime = (lvl + 1) * 20;
+    score = (maxTime - sec) * (lvl + 1) * 10;
+    var score1 = (lvl + 1) * 100;
+    score = score > score1 ? score : score1;
 
-    };
-    var update_healthbar = function () {
+    $("#strength").html(score);
+    $("#health").html(user.lives + '/8');
+    $(".max-health").html(8);
+    update_healthbar();
 
-        var health_remaining = $("#health-remaining");
-        var health_bar = $("#health-bar");
+};
+var update_healthbar = function () {
 
-        var width = (user.lives / 8) * health_bar.width();
+    var health_remaining = $("#health-remaining");
+    var health_bar = $("#health-bar");
 
-        health_remaining.width(width)
+    var width = (user.lives / 8) * health_bar.width();
 
-    };
-function writeLvl(){
+    health_remaining.width(width)
+
+};
+
+function writeLvl() {
     var level = {
-                a: a,
-                b: b,
-                gSize: gSize,
-                level: lvl,
-                lives: user.lives,
-                score: sc + score
-            };
+        a: a,
+        b: b,
+        gSize: gSize,
+        level: lvl,
+        lives: user.lives,
+        score: sc + score
+    };
 
-            window.sessionStorage.setItem("level", dyslexia(JSON.stringify(level)));
+    window.sessionStorage.setItem("level", dyslexia(JSON.stringify(level)));
 }
 $(document).keyup(function (e) {
     if (end == 1) {
@@ -168,7 +151,7 @@ $(document).keyup(function (e) {
         if (e.keyCode == 13 || e.keyCode == 27) {
             $('#success').hide();
             $('#failure').hide();
-clean();
+            clean();
 
             end = 0;
             begin();
@@ -181,7 +164,7 @@ window.requestAnimFrame = (function () {
         window.setTimeout(callback, 1000 / 60);
     };
 })();
-var score, sc , bleh, lvl, end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
+var score, sc, bleh, lvl, end, enemies, canvasMaze, ctxMaze, canvas2, ctx2, gSize, a, b, width, height, W, H, blocks, usableBlocks;
 Array.prototype.sortOn = function (key) {
     this.sort(function (a, b) {
         if (a[key] < b[key]) {
@@ -200,38 +183,50 @@ var Lamp = illuminated.Lamp,
     Vec2 = illuminated.Vec2,
     Lighting = illuminated.Lighting,
     DarkMask = illuminated.DarkMask;
-var rectangles = [],time;
+var rectangles = [],
+    time;
 
 
-function initialize(A, B, size, l,s) {
+function initialize(A, B, size, l, s) {
+    //$('#social-sidebar a span').hover($(this).css("left","130%").css("opacity", 1));
     sec = 0;
+
     function pad(val) {
         return val > 9 ? val : "0" + val;
     }
-    time  = setInterval(function () {
+    time = setInterval(function () {
         $("#seconds").html(pad(++sec % 60));
         $("#minutes").html(pad(parseInt(sec / 60, 10)));
     }, 1000);
-    var c = $("<div>", {id: "sheet"});
+    var c = $("<div>", {
+        id: "sheet"
+    });
     $("body").append(c);
-    var c = $("<canvas>", {id: "canvasMaze"});
+    var c = $("<canvas>", {
+        id: "canvasMaze"
+    });
     $("#sheet").append(c);
-    c = $("<canvas>", {id: "canvasMotion"});
+    c = $("<canvas>", {
+        id: "canvasMotion"
+    });
     $("#sheet").append(c);
-    c = $("<canvas>", {id: "notlight"});
+    c = $("<canvas>", {
+        id: "notlight"
+    });
     $("#sheet").append(c);
-    c = $("<canvas>", {id: "light"});
+    c = $("<canvas>", {
+        id: "light"
+    });
     $("#sheet").append(c);
     canvasMaze = document.getElementById('canvasMaze');
     ctxMaze = canvasMaze.getContext('2d');
 
     //Properties
     gSize = size || 50;
-    if(window.innerWidth>900)
-    gSize = gSize*window.innerWidth/1366*0.9;    
+    if (window.innerWidth > 900) gSize = gSize * window.innerWidth / 1366 * 0.9;
     a = A || 6,
     b = B || 5;
-    sc = s|0;
+    sc = s | 0;
     lvl = l || 0;
     blocks = [],
     $("#gScore").html(sc);
@@ -330,16 +325,18 @@ function drawHLines(line) {
     }), 1));
 }
 var bgcol;
-function exit(){
+
+function exit() {
 
     var canvas = document.getElementById('notlight');
     var ctx = canvas.getContext('2d');
     var light = new Lamp({
-        position: new Vec2((2*a-.5)*gSize,(2*b+1)*gSize),
+        position: new Vec2((2 * a - .5) * gSize, (2 * b + 1) * gSize),
         color: user.lightColor,
         radius: 0,
         samples: 3,
-        distance: 60    });
+        distance: 60
+    });
     var lighting = new Lighting({
         light: light,
         objects: rectangles
@@ -351,6 +348,7 @@ function exit(){
 
 
 }
+
 function start(obj) {
     var canvas = canvasMaze;
     var ctx = ctxMaze;
@@ -382,10 +380,13 @@ function start(obj) {
 }
 
 function gameStart(rows, cols, size, l, s, life) {
-
+    if (flag != 0) {
+        window.addEventListener('keydown', DOWN, true);
+        window.addEventListener('keyup', UP, true);
+    }
     window.sessionStorage.setItem("refresh", dyslexia("false"));
-    initialize(rows, cols, size, l,s);
-    $('#level').html('<h2>Level ' + lvl + '</h2>');
+    initialize(rows, cols, size, l, s);
+    $('#level').html('<h2>' + lvl + '</h2>');
 
     var fpsa = document.getElementById('fps');
     var updateCanvas = true;
@@ -393,12 +394,10 @@ function gameStart(rows, cols, size, l, s, life) {
     var i, j;
     var mouse = {};
     user = new User();
-    user.speed = gSize / 6;
-    console.log(user);
-    user.lives = life||8;
-$('#lives').html(user.lives);
-    window.addEventListener('keydown', DOWN, true);
-    window.addEventListener('keyup', UP, true);
+    //user.speed = gSize / 6;
+    user.lives = life || 8;
+    $('#lives').html(user.lives);
+
 
 
     for (i = 0; i < 2 * b + 1; i++)
@@ -513,7 +512,8 @@ $('#lives').html(user.lives);
     });
     verlines.sortOn('len')
 
-    enemies = [];
+    delete enemies;
+    enemies = new Array();
 
     var fps = {
         startTime: 0,
@@ -549,7 +549,7 @@ $('#lives').html(user.lives);
         });
 
     }
-     initEnemies();
+    initEnemies();
     //enemies.push(new Enemy(verfree[1]));
     bgcol = enemies[0].color || black;
     if (bgcol == 'white' || bgcol == '#000') {
@@ -557,24 +557,33 @@ $('#lives').html(user.lives);
         user.lightColor = 'black';
     }
     consequences();
-    function ekill(e){
-    
+
+    function ekill(e) {
+
         e.color = "rgba(0,0,0,0.4)";
         e.ctx.clearRect(e.x - e.radius - 1, e.y - gSize, 2 * e.radius + 2, gSize * 1.5);
         e.draw();
         enemies.splice(enemies.indexOf(e), 1);
-        setTimeout(function () {
+        /*delete enemies[enemies.indexOf(e)];
+        e = null
+        */
+        enemyRespawn = setTimeout(function () {
             e.color = 'black';
             enemies.push(e)
-        }, 2000*((lvl+3)/(lvl+1)));
+        }, 2000 * ((lvl + 3) / (lvl + 1)));
     }
-function scorer(){
-        
+
+    function scorer() {
+
     }
-    function ukill(e){
-        
+
+    function ukill(e) {
         ekill(e);
+        var collide = new Audio('./sounds/collide.mp3')
+        collide.play();
         user.lives--;
+
+        if (user.lives < 0) user.lives = 0;
         writeLvl();
         if (user.keys.left) {
             user.x += user.speed;
@@ -586,27 +595,26 @@ function scorer(){
             user.y -= user.speed;
         }
         $('#lives').html(user.lives);
-            user.keys = {
-                up: false,
-                down: false,
-                right: false,
-                left: false
-            };
-            if(user.lives==0){
-                end = 2;
-                cancelAnimationFrame(animation);
-                stuff(0);
-                window.sessionStorage.clear();
-            }
+        user.keys = {
+            up: false,
+            down: false,
+            right: false,
+            left: false
+        };
+        if (user.lives == 0) {
+            end = 2;
+            cancelAnimationFrame(animation);
+            stuff(0);
+            window.sessionStorage.clear();
+        }
     }
     exit();
+
     function drawLoop() {
         update_stats();
-        if(flag!=0)
-        enemies.forEach(function (e) {
+        if (flag != 0) enemies.forEach(function (e) {
             e.move();
         });
-        fpsa.innerHTML = fps.getFPS()
         user.move();
         if (user.killTime < 200) {
             user.killTime += 1;
@@ -616,8 +624,7 @@ function scorer(){
             if (user.killMode == true) {
                 if (dist < user.lightDist) {
                     ekill(e);
-                }
-                else if (dist < 2 * user.radius) {
+                } else if (dist < 2 * user.radius) {
                     ukill(e);
                 }
 
@@ -627,18 +634,34 @@ function scorer(){
                 }
             }
 
-        })
-        console.log(enemies.length)
-;       animation = requestAnimFrame(drawLoop);
+        });
+        animation = requestAnimFrame(drawLoop);
 
     }
     drawLoop();
 
 };
 
-function reset(){
+function reset() {
     window.sessionStorage.clear();
+    $('#success').hide();
+    $('#failure').hide();
     clean();
     begin();
+    clearInterval(time);
+}
+
+function clean() {
+    clearTimeout(enemyRespawn);
+    cancelAnimationFrame(animation);
+    var a = $('#sheet');
+    a.empty();
+
+    rectangles.splice(0, rectangles.length);
+    delete user;
+    user = null;
+    enemies = [];
+    var a = $('canvas');
+    a.remove();
 }
 begin();

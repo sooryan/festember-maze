@@ -1,130 +1,167 @@
 @import url(https://fonts.googleapis.com/css?family=Alegreya+Sans+SC);
+@charset"utf-8";
+a {
+    text-decoration:none
+}
+audio, iframe {
+    display:none
+}
+ul {
+    list-style:none;
+    margin:0;
+    padding:0
+}
+#social-sidebar {
+    left:0;
+    position:fixed;
+    top:20%
+}
+#social-sidebar li:first-child a {
+    border-radius:0 5px 0 0
+}
+#social-sidebar li:last-child a {
+    border-radius:0 0 5px 0
+}
+#social-sidebar a {
+    background:#121212;
+    color:#fff;
+    display:block;
+    height:50px;
+    font-size:18px;
+    line-height:50px;
+    position:relative;
+    text-align:center;
+    width:100px
+}
+#social-sidebar a:hover span {
+    left:130%;
+    opacity:1
+}
+.container span {
+    z-index:9999
+}
+#social-sidebar a span {
+    border-radius:3px;
+    line-height:24px;
+    left:-100%;
+    margin-top:-16px;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter:alpha(opacity=0);
+    opacity:0;
+    padding:4px 8px;
+    position:absolute;
+    -webkit-transition:opacity .3s, left .4s;
+    -moz-transition:opacity .3s, left .4s;
+    -ms-transition:opacity .3s, left .4s;
+    -o-transition:opacity .3s, left .4s;
+    transition:opacity .3s, left .4s;
+    top:50%;
+    white-space:nowrap;
+    z-index:-1
+}
+#social-sidebar a span:before {
+    content:"";
+    display:block;
+    height:8px;
+    left:-4px;
+    margin-top:-4px;
+    position:absolute;
+    top:50%;
+    -webkit-transform:rotate(45deg);
+    -moz-transform:rotate(45deg);
+    -ms-transform:rotate(45deg);
+    -o-transform:rotate(45deg);
+    transform:rotate(45deg);
+    width:8px;
+    z-index:-2
+}
+#social-sidebar a:hover, #social-sidebar a span, #social-sidebar a span:before {
+    background:#00aced;
+    z-index:9999
+}
 #splashscreen {
-    z-index: 1000;
+    z-index:1000;
     position:absolute;
     text-align:center;
-    top:0;
-    left:0;
-    bottom:0;
-    right:0;
-    background-color:rgba(0,0,0,0.8);
-    display:none;
+    top:10%;
+    left:10%;
+    bottom:10%;
+    right:10%;
+    background-color:rgba(0, 0, 0, 0.8);
+    display:none
 }
-#scontent{
-position: absolute;
-    top: 50%;
-    left: 55%;
-    transform: translate(-50%, -50%);
+#scontent {
+    position:absolute;
+    top:50%;
+    left:55%;
+    transform:translate(-50%, -50%)
 }
 ul {
     top:0;
     padding:5px;
-    list-style-type: none;
+    list-style-type:none
 }
 ul li {
-    display: inline;
-}
-#stats-container {
-    position: absolute;
-    top: 50%;
-    padding:0 10px 0 10px;
-    transform: translate(0, -50%);
-    background: rgba(255,255,255,0.1);
-}
-#stats-container .float-left {
-    float:left;
-    margin:0;
-    padding:5px;
-}
-img{
-    width:20%;
-    float:left;
-    padding:2%;
-}
-.stat {
-    clear:both;
-    padding:10px;
-}
-#content-container {
-    text-align: center;
-}
-#health-bar {
-    position:relative;
-    background: #C90808;
-    height: 35px;
-    width: 100%;
-    z-index: 0;
-    padding: 0;
-    text-align: center;
-}
-#health-text {
-    top:-16px;
-    color:#fff;
-    z-index: 2;
-    position: absolute;
-    text-align: center;
-    width: 100%;
-    display: block;
-}
-#health-remaining {
-    position:absolute;
-    left:0;
-    background: #009E03;
-    height: 35px;
-    width: 100%;
-    display: block;
-    z-index: 1;
+    display:inline
 }
 #load-box {
-    display: none;
+    display:none
 }
 #success .window, #failure .window {
-    padding: 2%;
-    background-color: rgba(255, 0, 0, 0.5);
+    padding:2%;
+    background-color:rgba(255, 0, 0, 0.5);
     z-index:9999;
-    position: absolute;
+    position:absolute;
     text-align:center;
-    top: 50%;
-    left: 55%;
-    transform: translate(-50%, -50%);
+    top:50%;
+    left:55%;
+    transform:translate(-50%, -50%)
 }
 body {
-    font-family: 'Alegreya Sans SC', sans-serif;
+    font-family:'Alegreya Sans SC', sans-serif;
     color:white;
-    overflow : none;
-    background:linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("bg.jpg");
-    background-attachment: fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    overflow:none;
+    background:linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(bg.jpg);
+    background-attachment:fixed;
+    -webkit-background-size:cover;
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size:cover
 }
-.wrapper{
-    position:relative;
+.wrapper {
+    position:relative
 }
 canvas {
-    position: absolute;
-    top: 50%;
-    left: 55%;
-    transform: translate(-50%, -50%);
+    position:absolute;
+    top:50%;
+    left:55%;
+    transform:translate(-50%, -50%)
 }
 #fps {
-    color:white;
+    color:white
 }
 #level {
-    z-index:1000;
+    z-index:1000
 }
-h3{
+h3 {
     padding:0;
-    margin:0;
+    margin:0
 }
-a{
-  text-decoration: none;  
+a {
+    text-decoration:none
 }
-
 .restart--button {
-  color: white;
+    color:white
 }
 .restart--button:hover {
-  color: green;
+    color:green
+}
+#endgame {
+    top:0;
+    bottom:0;
+    right:0;
+    left:0;
+    background:black;
+    z-index:100;
+    display:none;
 }
