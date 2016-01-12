@@ -3,13 +3,23 @@
 a {
     text-decoration:none
 }
-audio, iframe {
+html{
+overflow:none;
+-ms-scroll-limit:0 0 0 0 ;}
+audio{
     display:none
 }
 ul {
     list-style:none;
     margin:0;
     padding:0
+}
+.fb-like{
+    padding-left:3px;
+}
+iframe{
+    margin:0;
+    padding:0;
 }
 #social-sidebar {
     left:0;
@@ -79,6 +89,17 @@ ul {
     background:#00aced;
     z-index:9999
 }
+#end{
+	z-index:9999;
+    position:absolute;
+    text-align:center;
+    top:1%;
+    left:1%;
+    bottom:1%;
+    right:1%;
+    background-color:"pink";
+    display:none;
+}
 #splashscreen {
     z-index:1000;
     position:absolute;
@@ -90,6 +111,19 @@ ul {
     background-color:rgba(0, 0, 0, 0.8);
     display:none
 }
+#canvasMaze{
+	z-index:1;
+}
+#canvasMotion{
+	z-index:2;
+}
+#notlight{
+	z-index:3;
+}
+#light{
+	z-index:4;
+}
+
 #scontent {
     position:absolute;
     top:50%;
@@ -164,4 +198,10 @@ a {
     background:black;
     z-index:100;
     display:none;
+}
+#footer {
+    clear: both;
+    position: absolute;
+    z-index: 10;
+    top: 95%;
 }
